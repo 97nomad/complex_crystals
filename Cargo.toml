@@ -1,0 +1,15 @@
+[package]
+name = "complex_crystals-client"
+version = "0.1.0"
+authors = ["97nomad <97nomad@gmail.com>"]
+
+[dependencies]
+sdl2 = "*"
+sdl2_image = "*"
+sdl2_ttf = "*"
+rand = "*"
+rustc-serialize = "*"
+
+[dependencies.hyper]
+version = "*"
+default-features = false
