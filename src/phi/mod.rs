@@ -8,22 +8,7 @@ use ::sdl2::pixels::Color;
 use phi::gfx::Sprite;
 use std::path::Path;
 use std::collections::HashMap;
-
-struct_events! {
-    keyboard: {
-        key_escape: Escape,
-        key_up: Up,
-        key_down: Down,
-        key_left: Left,
-        key_right: Right,
-        key_space: Space,
-        key_a: A,
-        key_z: Z
-    },
-    else: {
-        quit: Quit { .. }
-    }
-}
+use phi::events::Events;
 
 pub struct Phi<'window> {
     pub events: Events,

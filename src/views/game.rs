@@ -33,27 +33,27 @@ impl GameView {
 
 impl View for GameView {
     fn render(&mut self, phi: &mut Phi, elapsed: f64) -> ViewAction {
-        if phi.events.now.quit || phi.events.now.key_escape == Some(true) {
+        if phi.events.now.quit || phi.events.now.key_escape {
             return ViewAction::Quit;
         }
 
         // Передвижение камеры и зум
-        if phi.events.now.key_up == Some(true) {
+        if phi.events.now.key_up {
             self.camera.move_up(CAMERA_SENSITIVITY * elapsed);
         }
-        if phi.events.now.key_down == Some(true) {
+        if phi.events.now.key_down {
             self.camera.move_down(CAMERA_SENSITIVITY * elapsed);
         }
-        if phi.events.now.key_left == Some(true) {
+        if phi.events.now.key_left {
             self.camera.move_left(CAMERA_SENSITIVITY * elapsed);
         }
-        if phi.events.now.key_right == Some(true) {
+        if phi.events.now.key_right {
             self.camera.move_right(CAMERA_SENSITIVITY * elapsed);
         }
-        if phi.events.now.key_a == Some(true) {
+        if phi.events.now.key_a {
             self.camera.zoom_in(ZOOM_SENSITIVITY * elapsed);
         }
-        if phi.events.now.key_z == Some(true) {
+        if phi.events.now.key_z {
             self.camera.zoom_out(ZOOM_SENSITIVITY * elapsed);
         }
 

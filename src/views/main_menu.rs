@@ -27,22 +27,22 @@ impl MainMenuView {
 
 impl View for MainMenuView {
     fn render(&mut self, phi: &mut Phi, elapsed: f64) -> ViewAction {
-        if phi.events.now.quit || phi.events.now.key_escape == Some(true) {
+        if phi.events.now.quit || phi.events.now.key_escape {
             return ViewAction::Quit;
         }
 
-        if phi.events.now.key_space == Some(true) {
+        if phi.events.now.key_space {
             return (self.actions[self.selected as usize].func)(phi);
         }
 
-        if phi.events.now.key_up == Some(true) {
+        if phi.events.now.key_up {
             self.selected -= 1;
             if self.selected < 0 {
                 self.selected = self.actions.len() as i8 - 1;
             }
         }
 
-        if phi.events.now.key_down == Some(true) {
+        if phi.events.now.key_down {
             self.selected += 1;
             if self.selected >= self.actions.len() as i8 {
                 self.selected = 0;
