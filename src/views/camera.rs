@@ -36,12 +36,8 @@ impl Camera {
         self.pos_y += d;
     }
 
-    pub fn zoom_in(&mut self, d: f64) {
+    pub fn zoom(&mut self, d: f64) {
         self.zoom += d;
-    }
-
-    pub fn zoom_out(&mut self, d: f64) {
-        self.zoom -= d;
         if self.zoom < ZOOM_MIN {
             self.zoom = ZOOM_MIN;
         }

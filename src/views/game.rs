@@ -50,11 +50,8 @@ impl View for GameView {
         if phi.events.now.key_right {
             self.camera.move_right(CAMERA_SENSITIVITY * elapsed);
         }
-        if phi.events.now.key_a {
-            self.camera.zoom_in(ZOOM_SENSITIVITY * elapsed);
-        }
-        if phi.events.now.key_z {
-            self.camera.zoom_out(ZOOM_SENSITIVITY * elapsed);
+        if phi.events.now.mouse_wheel != 0 {
+            self.camera.zoom(ZOOM_SENSITIVITY * elapsed * phi.events.now.mouse_wheel as f64);
         }
 
         // Работа с сетью тут
