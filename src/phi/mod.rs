@@ -10,10 +10,15 @@ use std::path::Path;
 use std::collections::HashMap;
 use phi::events::Events;
 
+const WIDTH: f64 = 1366.0;
+const HEIGHT: f64 = 768.0;
+
 pub struct Phi<'window> {
     pub events: Events,
     pub renderer: Renderer<'window>,
     pub fps: u16,
+    pub width_coeff: f64,
+    pub height_coeff: f64,
 
     pub ttf_context: ::sdl2_ttf::Sdl2TtfContext,
     cached_fonts: HashMap<(&'static str, u16), ::sdl2_ttf::Font>,
@@ -28,6 +33,8 @@ impl<'window> Phi<'window> {
             events: events,
             renderer: renderer,
             fps: 0,
+            width_coeff: 1.0,
+            height_coeff: 1.0,
             ttf_context: ttf_context,
             cached_fonts: HashMap::new(),
         }
@@ -122,6 +129,14 @@ pub fn spawn<F>(title: &str, init: F)
         }
 
         context.events.pump(&mut context.renderer);
+
+        match context.events.now.resize {
+            None => {}
+            Some((w, h)) => {
+                context.width_coeff = w as f64 / WIDTH;
+                context.height_coeff = h as f64 / HEIGHT;
+            }
+        }
 
         match current_view.render(&mut context, elapsed) {
             ViewAction::None => context.renderer.present(),

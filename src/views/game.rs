@@ -94,12 +94,29 @@ impl View for GameView {
         }
 
         self.down_ui.clear_data();
-        self.down_ui.add_data(phi, "Object1".to_owned());
-        self.down_ui.add_data(phi, "Object1".to_owned());
-        self.down_ui.add_data(phi, "Object1".to_owned());
-        self.down_ui.add_data(phi, "Object1".to_owned());
-        self.down_ui.add_data(phi, "Object1".to_owned());
-        self.down_ui.add_data(phi, "Object1".to_owned());
+        self.down_ui.add_data(phi, "owner: Player1".to_owned());
+        self.down_ui.add_data(phi, "name: Yamato Cannon".to_owned());
+        self.down_ui.add_data(phi, "otype: PulseCannon".to_owned());
+        self.down_ui.add_data(phi, "x: 100.23451235".to_owned());
+        self.down_ui.add_data(phi, "y: 10.012341".to_owned());
+
+        self.down_ui.add_data(phi, "drive_speed: 0.0".to_owned());
+        self.down_ui.add_data(phi, "drive_dest_x: 100.23451235".to_owned());
+        self.down_ui.add_data(phi, "drive_dest_y: 10.012341".to_owned());
+        self.down_ui.add_data(phi, "radar_radius: 500.0".to_owned());
+        self.down_ui.add_data(phi, "radar_type: Military".to_owned());
+
+        self.down_ui.add_data(phi, "weapon_active: false".to_owned());
+        self.down_ui.add_data(phi, "weapon_type: Plasma".to_owned());
+        self.down_ui.add_data(phi, "weapon_radius: 700.0".to_owned());
+        self.down_ui.add_data(phi, "weapon_target_x: 632.11".to_owned());
+        self.down_ui.add_data(phi, "weapon_target_y: 301.1".to_owned());
+
+        self.down_ui.add_data(phi, "cargo_type: Plasma".to_owned());
+        self.down_ui.add_data(phi, "cargo_max: 1000.0".to_owned());
+        self.down_ui.add_data(phi, "cargo_current: 839.0".to_owned());
+        self.down_ui.add_data(phi, "shell_health: 86.43".to_owned());
+        self.down_ui.add_data(phi, "shell_type: Building".to_owned());
 
         // Рисуем UI
         let (w, h) = phi.output_size();
@@ -110,13 +127,7 @@ impl View for GameView {
                               w: w,
                               h: h,
                           });
-        self.down_ui.render(&mut phi.renderer,
-                            Rectangle {
-                                x: 0.0,
-                                y: 0.0,
-                                w: w,
-                                h: h,
-                            });
+        self.down_ui.render(phi);
 
         ViewAction::None
     }
