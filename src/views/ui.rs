@@ -98,13 +98,16 @@ impl DownUI {
     }
 
     pub fn add_data(&mut self, phi: &mut Phi, data: String) {
-        self.data.push(phi.ttf_str_sprite(&data, FONT_PATH, 16, Color::RGB(255, 0, 0)).unwrap());
+        self.data.push(phi.ttf_str_sprite(&data, FONT_PATH, 18, Color::RGB(255, 0, 0)).unwrap());
     }
 
     pub fn render(&mut self, phi: &mut Phi) {
         let (w, h) = phi.output_size();
-        let minimap_w = self.minimap_background.width() * phi.width_coeff;
-        let minimap_h = self.minimap_background.height() * phi.height_coeff;
+        let width_coeff = phi.width_coeff;
+        let height_coeff = phi.height_coeff;
+
+        let minimap_w = self.minimap_background.width() * width_coeff;
+        let minimap_h = self.minimap_background.height() * height_coeff;
         phi.renderer.copy_sprite(&self.minimap_background,
                                  Rectangle {
                                      x: 0.0,
@@ -112,8 +115,8 @@ impl DownUI {
                                      w: minimap_w,
                                      h: minimap_h,
                                  });
-        let bg_w = self.background.width() * phi.width_coeff;
-        let bg_h = self.background.height() * phi.height_coeff;
+        let bg_w = self.background.width() * width_coeff;
+        let bg_h = self.background.height() * height_coeff;
         phi.renderer.copy_sprite(&self.background,
                                  Rectangle {
                                      x: minimap_w,
@@ -122,19 +125,19 @@ impl DownUI {
                                      h: bg_h,
                                  });
 
-        self.draw_unit_info(&mut phi.renderer,
+        self.draw_unit_info(phi,
                             Rectangle {
-                                x: minimap_w + (275.0 * phi.width_coeff),
-                                y: h - bg_h + (125.0 * phi.height_coeff),
+                                x: minimap_w + (275.0 * width_coeff),
+                                y: h - bg_h + (125.0 * height_coeff),
                                 w: 100.0,
                                 h: 100.0,
                             });
     }
 
-    fn draw_unit_info(&mut self, renderer: &mut Renderer, dest: Rectangle) {
+    fn draw_unit_info(&mut self, phi: &mut Phi, dest: Rectangle) {
         const MAX_ELEMENTS_IN_COLUMN: u16 = 5;
         const COLUMN_WIDTH: f64 = 200.0;
-        const BORDER: f64 = 1.0;
+        const BORDER: f64 = 10.0;
         let mut element = 0;
         let mut rect = Rectangle {
             x: dest.x,
@@ -145,16 +148,16 @@ impl DownUI {
         for sprite in &self.data {
             let mut dest_rect = Rectangle {
                 x: rect.x,
-                y: rect.y + rect.h + BORDER,
-                w: sprite.width(),
-                h: sprite.height(),
+                y: rect.y + rect.h + (BORDER * phi.height_coeff),
+                w: sprite.width() * phi.width_coeff,
+                h: sprite.height() * phi.height_coeff,
             };
 
-            renderer.copy_sprite(sprite, dest_rect.clone());
+            phi.renderer.copy_sprite(sprite, dest_rect.clone());
             element += 1;
             if element == MAX_ELEMENTS_IN_COLUMN {
                 dest_rect = Rectangle {
-                    x: dest_rect.x + COLUMN_WIDTH,
+                    x: dest_rect.x + (COLUMN_WIDTH * phi.width_coeff),
                     y: dest.y,
                     w: 0.0,
                     h: 0.0,
