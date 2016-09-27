@@ -121,14 +121,7 @@ impl View for GameView {
         }
 
         // Рисуем UI
-        let (w, h) = phi.output_size();
-        self.up_ui.render(&mut phi.renderer,
-                          Rectangle {
-                              x: 0.0,
-                              y: 0.0,
-                              w: w,
-                              h: h,
-                          });
+        self.up_ui.render(phi);
         self.down_ui.render(phi);
 
         ViewAction::None

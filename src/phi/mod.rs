@@ -10,8 +10,8 @@ use std::path::Path;
 use std::collections::HashMap;
 use phi::events::Events;
 
-const WIDTH: f64 = 1366.0;
-const HEIGHT: f64 = 768.0;
+pub const WIDTH: f64 = 1366.0;
+pub const HEIGHT: f64 = 768.0;
 
 pub struct Phi<'window> {
     pub events: Events,

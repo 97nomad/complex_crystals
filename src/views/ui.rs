@@ -3,6 +3,7 @@ use ::sdl2::pixels::Color;
 use ::phi::gfx::{Sprite, CopySprite};
 use ::phi::data::Rectangle;
 use ::phi::Phi;
+use ::phi::WIDTH;
 
 const DOWNUI_PATH: &'static str = "assets/downui.png";
 const DOWNUI_MINIMAP_PATH: &'static str = "assets/downuiminimap.png";
@@ -24,23 +25,19 @@ impl UpUI {
         let data = vec![
             phi.ttf_str_sprite("FPS", FONT_PATH, 24, Color::RGB(0, 0, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("FPS", FONT_PATH, 24, Color::RGB(0, 0, 255))
+            phi.ttf_str_sprite("Player", FONT_PATH, 24, Color::RGB(0, 0, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("FPS", FONT_PATH, 24, Color::RGB(0, 0, 255))
+            phi.ttf_str_sprite("ServerName", FONT_PATH, 24, Color::RGB(0, 0, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("FPS", FONT_PATH, 24, Color::RGB(0, 0, 255))
+            phi.ttf_str_sprite(" ", FONT_PATH, 24, Color::RGB(0, 0, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("FPS", FONT_PATH, 24, Color::RGB(0, 0, 255))
+            phi.ttf_str_sprite("3500", FONT_PATH, 24, Color::RGB(0, 0, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("FPS", FONT_PATH, 24, Color::RGB(0, 0, 255))
+            phi.ttf_str_sprite("120", FONT_PATH, 24, Color::RGB(0, 0, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("FPS", FONT_PATH, 24, Color::RGB(0, 0, 255))
+            phi.ttf_str_sprite("10/100", FONT_PATH, 24, Color::RGB(0, 0, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("FPS", FONT_PATH, 24, Color::RGB(0, 0, 255))
-                .unwrap(),
-            phi.ttf_str_sprite("FPS", FONT_PATH, 24, Color::RGB(0, 0, 255))
-                .unwrap(),
-            phi.ttf_str_sprite("FPS", FONT_PATH, 24, Color::RGB(0, 0, 255))
+            phi.ttf_str_sprite("TPS", FONT_PATH, 24, Color::RGB(0, 0, 255))
                 .unwrap(),
         ];
         UpUI {
@@ -56,23 +53,22 @@ impl UpUI {
             .unwrap();
     }
 
-    pub fn render(&mut self, renderer: &mut Renderer, dest: Rectangle) {
-        let (left_w, left_h) = self.background_left.size();
+    pub fn render(&mut self, phi: &mut Phi) {
         let (center_w, center_h) = self.background_center.size();
-        let (right_w, right_h) = self.background_right.size();
-        let window_w = renderer.viewport().width() as f64;
-        let window_h = renderer.viewport().height() as f64;
-        // let start_x = window_w + (left_w + (center_w * self.data.len() as f64) - 2.0) + right_w;
+        let start_pos = (WIDTH - (self.data.len() as f64 * self.background_center.width())) / 2.0 *
+                        phi.width_coeff;
         for (i, sprite) in self.data.iter().enumerate() {
             let rect = Rectangle {
-                x: (i as f64 * center_w),
+                x: start_pos + (i as f64 * center_w * phi.width_coeff),
                 y: 0.0,
-                w: center_w,
-                h: center_h,
+                w: center_w * phi.width_coeff,
+                h: center_h * phi.height_coeff,
             };
-            renderer.copy_sprite(&self.background_center, rect);
+            phi.renderer.copy_sprite(&self.background_center, rect);
             let (sprite_w, sprite_h) = sprite.size();
-            renderer.copy_sprite(sprite, rect.in_center(sprite_w, sprite_h));
+            phi.renderer.copy_sprite(sprite,
+                                     rect.in_center(sprite_w * phi.width_coeff,
+                                                    sprite_h * phi.height_coeff));
         }
     }
 }
