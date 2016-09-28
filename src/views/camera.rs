@@ -45,8 +45,8 @@ impl Camera {
 
     pub fn translate_rect(&self, rect: Rectangle) -> Rectangle {
         Rectangle {
-            x: (rect.x + self.pos_x) * self.zoom,
-            y: (rect.y + self.pos_y) * self.zoom,
+            x: (rect.x - self.pos_x) * self.zoom,
+            y: (rect.y - self.pos_y) * self.zoom,
             w: rect.w * self.zoom,
             h: rect.h * self.zoom,
         }

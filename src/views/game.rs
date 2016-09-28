@@ -94,12 +94,13 @@ impl View for GameView {
         match phi.events.now.left_mouse_click {
             None => {}
             Some((x, y)) => {
-                let cursor_rect = self.camera.translate_rect(Rectangle {
-                    x: x as f64 - OBJECT_SIZE / 2.0,
-                    y: y as f64 - OBJECT_SIZE / 2.0,
-                    w: OBJECT_SIZE,
-                    h: OBJECT_SIZE,
-                });
+                let cursor_rect = Rectangle {
+                    x: x as f64 - OBJECT_SIZE / 2.0 * self.camera.zoom,
+                    y: y as f64 - OBJECT_SIZE / 2.0 * self.camera.zoom,
+                    w: OBJECT_SIZE * self.camera.zoom,
+                    h: OBJECT_SIZE * self.camera.zoom,
+                };
+
                 self.down_ui.clear_data();
 
                 macro_rules! print_to_downui {  // Макрос для нижнего UI
@@ -108,7 +109,8 @@ impl View for GameView {
                     }
                 }
                 for obj in self.network.objects.lock().unwrap().iter() {
-                    if cursor_rect.contains_point(obj.x, obj.y) {
+                    if cursor_rect.contains_point((obj.x - self.camera.pos_x) * self.camera.zoom,
+                                                  (obj.y - self.camera.pos_y) * self.camera.zoom) {
                         print_to_downui!("owner: ", obj.owner);
                         print_to_downui!("name: ", obj.name);
                         print_to_downui!("otype: ", obj.otype);
@@ -162,8 +164,8 @@ impl ObjectName {
 fn draw_object(phi: &mut Phi, camera: &Camera, x: f64, y: f64) {
     phi.renderer
         .fill_rect(camera.translate_rect(Rectangle {
-                x: x,
-                y: y,
+                x: x - OBJECT_SIZE / 2.0,
+                y: y - OBJECT_SIZE / 2.0,
                 w: OBJECT_SIZE,
                 h: OBJECT_SIZE,
             })
