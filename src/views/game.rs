@@ -101,57 +101,37 @@ impl View for GameView {
                     h: OBJECT_SIZE,
                 });
                 self.down_ui.clear_data();
+
+                macro_rules! print_to_downui {  // Макрос для нижнего UI
+                ($str1: expr, $str2: expr) => {
+                        self.down_ui.add_data(phi, $str1.to_string() + &$str2.to_string());
+                    }
+                }
                 for obj in self.network.objects.lock().unwrap().iter() {
                     if cursor_rect.contains_point(obj.x, obj.y) {
-                        self.down_ui.add_data(phi, "owner: ".to_owned() + &obj.owner);
-                        self.down_ui.add_data(phi, "name: ".to_owned() + &obj.name);
-                        self.down_ui.add_data(phi, "otype: ".to_owned() + &obj.otype.to_string());
-                        self.down_ui.add_data(phi, "x: ".to_owned() + &obj.x.to_string());
-                        self.down_ui.add_data(phi, "y: ".to_owned() + &obj.y.to_string());
+                        print_to_downui!("owner: ", obj.owner);
+                        print_to_downui!("name: ", obj.name);
+                        print_to_downui!("otype: ", obj.otype);
+                        print_to_downui!("x:", obj.x);
+                        print_to_downui!("y: ", obj.y);
 
-                        self.down_ui.add_data(phi,
-                                              "drive_speed: ".to_owned() +
-                                              &obj.drive_speed.to_string());
-                        self.down_ui.add_data(phi,
-                                              "drive_dest_x: ".to_owned() +
-                                              &obj.drive_dest_x.to_string());
-                        self.down_ui.add_data(phi,
-                                              "drive_dest_y: ".to_owned() +
-                                              &obj.drive_dest_y.to_string());
-                        self.down_ui.add_data(phi,
-                                              "radar_radius: ".to_owned() +
-                                              &obj.radar_radius.to_string());
-                        self.down_ui
-                            .add_data(phi, "radar_type: ".to_owned() + &obj.radar_type.to_string());
+                        print_to_downui!("drive_speed: ", obj.drive_speed);
+                        print_to_downui!("drive_dest_x: ", obj.drive_dest_x);
+                        print_to_downui!("drive_dest_y: ", obj.drive_dest_y);
+                        print_to_downui!("radar_radius: ", obj.radar_radius);
+                        print_to_downui!("radar_type: ", obj.radar_type);
 
-                        self.down_ui.add_data(phi,
-                                              "weapon_active: ".to_owned() +
-                                              &obj.weapon_active.to_string());
-                        self.down_ui.add_data(phi,
-                                              "weapon_type: ".to_owned() +
-                                              &obj.weapon_type.to_string());
-                        self.down_ui.add_data(phi,
-                                              "weapon_radius: ".to_owned() +
-                                              &obj.weapon_radius.to_string());
-                        self.down_ui.add_data(phi,
-                                              "weapon_target_x: ".to_owned() +
-                                              &obj.weapon_target_x.to_string());
-                        self.down_ui.add_data(phi,
-                                              "weapon_target_y: ".to_owned() +
-                                              &obj.weapon_target_y.to_string());
+                        print_to_downui!("weapon_active: ", obj.weapon_active);
+                        print_to_downui!("weapon_type: ", obj.weapon_type);
+                        print_to_downui!("weapon_radius: ", obj.weapon_radius);
+                        print_to_downui!("weapon_target_x: ", obj.weapon_target_x);
+                        print_to_downui!("weapon_target_y: ", obj.weapon_target_y);
 
-                        self.down_ui
-                            .add_data(phi, "cargo_type: ".to_owned() + &obj.cargo_type.to_string());
-                        self.down_ui
-                            .add_data(phi, "cargo_max: ".to_owned() + &obj.cargo_max.to_string());
-                        self.down_ui.add_data(phi,
-                                              "cargo_current: ".to_owned() +
-                                              &obj.cargo_current.to_string());
-                        self.down_ui.add_data(phi,
-                                              "shell_health: ".to_owned() +
-                                              &obj.shell_health.to_string());
-                        self.down_ui
-                            .add_data(phi, "shell_type: ".to_owned() + &obj.shell_type.to_string());
+                        print_to_downui!("cargo_type: ", obj.cargo_type);
+                        print_to_downui!("cargo_max: ", obj.cargo_max);
+                        print_to_downui!("cargo_current: ", obj.cargo_current);
+                        print_to_downui!("shell_health: ", obj.shell_health);
+                        print_to_downui!("shell_type: ", obj.shell_type);
                         break;
                     }
                 }
@@ -184,8 +164,8 @@ fn draw_object(phi: &mut Phi, camera: &Camera, x: f64, y: f64) {
         .fill_rect(camera.translate_rect(Rectangle {
                 x: x,
                 y: y,
-                w: 16.0,
-                h: 16.0,
+                w: OBJECT_SIZE,
+                h: OBJECT_SIZE,
             })
             .to_sdl()
             .unwrap())
