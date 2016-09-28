@@ -60,3 +60,52 @@ pub struct SampleObject {
     pub shell_health: f64,
     pub shell_type: ArmorType,
 }
+
+impl ObjectType {
+    pub fn to_string(&self) -> String {
+        match *self {
+            ObjectType::Harvester => "Harvester".to_string(),
+            ObjectType::Battlecruiser => "Battlecruiser".to_string(),
+        }
+    }
+}
+
+impl RadarType {
+    pub fn to_string(&self) -> String {
+        match *self {
+            RadarType::Middle => "Middle".to_string(),
+            RadarType::Military => "Military".to_string(),
+            RadarType::Simple => "Simple".to_string(),
+        }
+    }
+}
+
+impl WeaponType {
+    pub fn to_string(&self) -> String {
+        match *self {
+            WeaponType::Laser => "Laser".to_string(),
+            WeaponType::Mining => "Mining".to_string(),
+        }
+    }
+}
+
+impl CargoType {
+    pub fn to_string(&self) -> String {
+        match *self {
+            CargoType::Battery => "Battery".to_string(),
+            CargoType::Mining => "Mining".to_string(),
+        }
+    }
+}
+
+impl ArmorType {
+    pub fn to_string(&self) -> String {
+        match *self {
+            ArmorType::Asteroid => "Asteroid".to_string(),
+            ArmorType::Building => "Building".to_string(),
+            ArmorType::Heavy => "Heavy".to_string(),
+            ArmorType::Light => "Light".to_string(),
+            ArmorType::Middle => "Middle".to_string(),
+        }
+    }
+}

@@ -9,6 +9,7 @@ use ::views::camera::Camera;
 
 const CAMERA_SENSITIVITY: f64 = 1000.0;
 const ZOOM_SENSITIVITY: f64 = 10.0;
+const OBJECT_SIZE: f64 = 16.0;
 
 pub struct GameView {
     network: Network,
@@ -90,31 +91,71 @@ impl View for GameView {
             draw_object(phi, &self.camera, obj.x, obj.y);
         }
 
-        if phi.events.now.left_mouse_click != None {
-            self.down_ui.clear_data();
-            self.down_ui.add_data(phi, "owner: Player1".to_owned());
-            self.down_ui.add_data(phi, "name: Yamato Cannon".to_owned());
-            self.down_ui.add_data(phi, "otype: PulseCannon".to_owned());
-            self.down_ui.add_data(phi, "x: 100.23451235".to_owned());
-            self.down_ui.add_data(phi, "y: 10.012341".to_owned());
+        match phi.events.now.left_mouse_click {
+            None => {}
+            Some((x, y)) => {
+                let cursor_rect = self.camera.translate_rect(Rectangle {
+                    x: x as f64 - OBJECT_SIZE / 2.0,
+                    y: y as f64 - OBJECT_SIZE / 2.0,
+                    w: OBJECT_SIZE,
+                    h: OBJECT_SIZE,
+                });
+                self.down_ui.clear_data();
+                for obj in self.network.objects.lock().unwrap().iter() {
+                    if cursor_rect.contains_point(obj.x, obj.y) {
+                        self.down_ui.add_data(phi, "owner: ".to_owned() + &obj.owner);
+                        self.down_ui.add_data(phi, "name: ".to_owned() + &obj.name);
+                        self.down_ui.add_data(phi, "otype: ".to_owned() + &obj.otype.to_string());
+                        self.down_ui.add_data(phi, "x: ".to_owned() + &obj.x.to_string());
+                        self.down_ui.add_data(phi, "y: ".to_owned() + &obj.y.to_string());
 
-            self.down_ui.add_data(phi, "drive_speed: 0.0".to_owned());
-            self.down_ui.add_data(phi, "drive_dest_x: 100.23451235".to_owned());
-            self.down_ui.add_data(phi, "drive_dest_y: 10.012341".to_owned());
-            self.down_ui.add_data(phi, "radar_radius: 500.0".to_owned());
-            self.down_ui.add_data(phi, "radar_type: Military".to_owned());
+                        self.down_ui.add_data(phi,
+                                              "drive_speed: ".to_owned() +
+                                              &obj.drive_speed.to_string());
+                        self.down_ui.add_data(phi,
+                                              "drive_dest_x: ".to_owned() +
+                                              &obj.drive_dest_x.to_string());
+                        self.down_ui.add_data(phi,
+                                              "drive_dest_y: ".to_owned() +
+                                              &obj.drive_dest_y.to_string());
+                        self.down_ui.add_data(phi,
+                                              "radar_radius: ".to_owned() +
+                                              &obj.radar_radius.to_string());
+                        self.down_ui
+                            .add_data(phi, "radar_type: ".to_owned() + &obj.radar_type.to_string());
 
-            self.down_ui.add_data(phi, "weapon_active: false".to_owned());
-            self.down_ui.add_data(phi, "weapon_type: Plasma".to_owned());
-            self.down_ui.add_data(phi, "weapon_radius: 700.0".to_owned());
-            self.down_ui.add_data(phi, "weapon_target_x: 632.11".to_owned());
-            self.down_ui.add_data(phi, "weapon_target_y: 301.1".to_owned());
+                        self.down_ui.add_data(phi,
+                                              "weapon_active: ".to_owned() +
+                                              &obj.weapon_active.to_string());
+                        self.down_ui.add_data(phi,
+                                              "weapon_type: ".to_owned() +
+                                              &obj.weapon_type.to_string());
+                        self.down_ui.add_data(phi,
+                                              "weapon_radius: ".to_owned() +
+                                              &obj.weapon_radius.to_string());
+                        self.down_ui.add_data(phi,
+                                              "weapon_target_x: ".to_owned() +
+                                              &obj.weapon_target_x.to_string());
+                        self.down_ui.add_data(phi,
+                                              "weapon_target_y: ".to_owned() +
+                                              &obj.weapon_target_y.to_string());
 
-            self.down_ui.add_data(phi, "cargo_type: Plasma".to_owned());
-            self.down_ui.add_data(phi, "cargo_max: 1000.0".to_owned());
-            self.down_ui.add_data(phi, "cargo_current: 839.0".to_owned());
-            self.down_ui.add_data(phi, "shell_health: 86.43".to_owned());
-            self.down_ui.add_data(phi, "shell_type: Building".to_owned());
+                        self.down_ui
+                            .add_data(phi, "cargo_type: ".to_owned() + &obj.cargo_type.to_string());
+                        self.down_ui
+                            .add_data(phi, "cargo_max: ".to_owned() + &obj.cargo_max.to_string());
+                        self.down_ui.add_data(phi,
+                                              "cargo_current: ".to_owned() +
+                                              &obj.cargo_current.to_string());
+                        self.down_ui.add_data(phi,
+                                              "shell_health: ".to_owned() +
+                                              &obj.shell_health.to_string());
+                        self.down_ui
+                            .add_data(phi, "shell_type: ".to_owned() + &obj.shell_type.to_string());
+                        break;
+                    }
+                }
+            }
         }
 
         // Рисуем UI

@@ -60,6 +60,10 @@ impl Rectangle {
         ymax >= self.y && ymax <= self.y + self.h
     }
 
+    pub fn contains_point(&self, x: f64, y: f64) -> bool {
+        x >= self.x && x <= self.x + self.w && y >= self.y && y <= self.y + self.h
+    }
+
     pub fn overlaps(&self, other: Rectangle) -> bool {
         self.x < other.x + other.w && self.x + self.w > other.x && self.y < other.y + other.h &&
         self.y + self.h > other.y
