@@ -74,6 +74,7 @@ impl View for GameView {
         phi.renderer.set_draw_color(Color::RGB(0, 0, 255));
         for obj in self.network.objects.lock().unwrap().iter() {
             match obj.otype {
+                ObjectType::Asteroid => phi.renderer.set_draw_color(Color::RGB(128, 128, 128)),
                 ObjectType::Harvester => phi.renderer.set_draw_color(Color::RGB(0, 255, 0)),
                 ObjectType::Battlecruiser => phi.renderer.set_draw_color(Color::RGB(255, 0, 0)),
             }

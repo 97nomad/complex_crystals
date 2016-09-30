@@ -1,11 +1,13 @@
 #[derive(RustcDecodable, RustcEncodable, Clone)]
 pub enum ObjectType {
+    Asteroid,
     Harvester,
     Battlecruiser,
 }
 
 #[derive(RustcDecodable, RustcEncodable, Clone)]
 pub enum RadarType {
+    None,
     Simple,
     Middle,
     Military,
@@ -13,12 +15,14 @@ pub enum RadarType {
 
 #[derive(RustcDecodable, RustcEncodable, Clone)]
 pub enum WeaponType {
+    None,
     Mining,
     Laser,
 }
 
 #[derive(RustcDecodable, RustcEncodable, Clone)]
 pub enum CargoType {
+    None,
     Mining,
     Battery,
 }
@@ -64,6 +68,7 @@ pub struct SampleObject {
 impl ObjectType {
     pub fn to_string(&self) -> String {
         match *self {
+            ObjectType::Asteroid => "Asteroid".to_string(),
             ObjectType::Harvester => "Harvester".to_string(),
             ObjectType::Battlecruiser => "Battlecruiser".to_string(),
         }
@@ -73,6 +78,7 @@ impl ObjectType {
 impl RadarType {
     pub fn to_string(&self) -> String {
         match *self {
+            RadarType::None => "None".to_string(),
             RadarType::Middle => "Middle".to_string(),
             RadarType::Military => "Military".to_string(),
             RadarType::Simple => "Simple".to_string(),
@@ -83,6 +89,7 @@ impl RadarType {
 impl WeaponType {
     pub fn to_string(&self) -> String {
         match *self {
+            WeaponType::None => "None".to_string(),
             WeaponType::Laser => "Laser".to_string(),
             WeaponType::Mining => "Mining".to_string(),
         }
@@ -92,6 +99,7 @@ impl WeaponType {
 impl CargoType {
     pub fn to_string(&self) -> String {
         match *self {
+            CargoType::None => "None".to_string(),
             CargoType::Battery => "Battery".to_string(),
             CargoType::Mining => "Mining".to_string(),
         }
