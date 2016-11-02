@@ -1,6 +1,7 @@
 #[derive(RustcDecodable, RustcEncodable, Clone)]
 pub enum ObjectType {
     Asteroid,
+    Builder,
     Harvester,
     Battlecruiser,
 }
@@ -69,6 +70,7 @@ impl ObjectType {
     pub fn to_string(&self) -> String {
         match *self {
             ObjectType::Asteroid => "Asteroid".to_string(),
+            ObjectType::Builder => "Builder".to_string(),
             ObjectType::Harvester => "Harvester".to_string(),
             ObjectType::Battlecruiser => "Battlecruiser".to_string(),
         }

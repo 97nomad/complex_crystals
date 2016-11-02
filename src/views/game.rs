@@ -75,19 +75,20 @@ impl View for GameView {
         for obj in self.network.objects.lock().unwrap().iter() {
             match obj.otype {
                 ObjectType::Asteroid => phi.renderer.set_draw_color(Color::RGB(128, 128, 128)),
+                ObjectType::Builder => phi.renderer.set_draw_color(Color::RGB(0,0,128)),
                 ObjectType::Harvester => phi.renderer.set_draw_color(Color::RGB(0, 255, 0)),
                 ObjectType::Battlecruiser => phi.renderer.set_draw_color(Color::RGB(255, 0, 0)),
             }
 
-            let name = ObjectName::new(phi, &obj.name);
-            let (w, h) = name.sprite.size();
-            phi.renderer.copy_sprite(&name.sprite,
+            //let name = ObjectName::new(phi, &obj.name);
+            //let (w, h) = name.sprite.size();
+            /*phi.renderer.copy_sprite(&name.sprite,
                                      self.camera.translate_rect(Rectangle {
                                          w: w,
                                          h: h,
                                          x: obj.x - (h * 1.5),
                                          y: obj.y + (w / 2.0),
-                                     }));
+                                     }));*/
 
             draw_object(phi, &self.camera, obj.x, obj.y);
         }

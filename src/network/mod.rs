@@ -20,7 +20,12 @@ impl Network {
 
     pub fn update(&mut self, addr: &str) {
         let objects = self.objects.clone();
-        let addr = Url::parse(addr).unwrap();
+        let addr = match Url::parse(addr) {
+            Ok(addr) => addr,
+            Err(e) => {
+                panic!("{:?}", e);
+            }
+        };
         thread::spawn(move || NetworkRequest::update_objects(objects, addr));
     }
 }
@@ -36,10 +41,14 @@ impl NetworkRequest {
             username: "admin".to_owned(),
             password: None,
         }));
-        let mut response = client.get(addr)
+        let mut response = match client.get(addr)
             .headers(headers)
-            .send()
-            .unwrap();
+            .send() {
+            Ok(data) => data,
+            Err(e) => {
+                panic!("Сервер не ответил на запрос");
+            }
+        };
         let mut response_string = String::new();
         response.read_to_string(&mut response_string).unwrap();
         let mut parsed_objects: Vec<SampleObject> = match json::decode(&response_string) {
