@@ -59,11 +59,17 @@ impl View for GameView {
         self.network_timer += elapsed;
         if self.network_timer >= 1.0 {
             self.network.update("http://localhost:3000/objects");
+            self.network.update_info("http://localhost:3000/info");
             self.network_timer = 0.0;
         }
 
         let fps = phi.fps;
         self.up_ui.set_fps(phi, fps); // Обновление FPS
+        let info;
+        {
+            info = self.network.server_info.lock().unwrap().clone();
+        }
+        self.up_ui.set_data(phi, info);
 
         // Чистим экран
         phi.renderer

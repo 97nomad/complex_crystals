@@ -4,6 +4,7 @@ use ::phi::gfx::{Sprite, CopySprite};
 use ::phi::data::Rectangle;
 use ::phi::Phi;
 use ::phi::WIDTH;
+use ::network::sampleobject::ServerInfo;
 
 const DOWNUI_PATH: &'static str = "assets/downui.png";
 const DOWNUI_MINIMAP_PATH: &'static str = "assets/downuiminimap.png";
@@ -46,6 +47,20 @@ impl UpUI {
             background_center: Sprite::load(&phi.renderer, CENTER_UPUI_PATH).unwrap(),
             data: data,
         }
+    }
+
+    pub fn set_data(&mut self, phi: &mut Phi, data: ServerInfo) {
+        self.data[2] =
+            phi.ttf_str_sprite(&data.name.to_string(), FONT_PATH, 24, Color::RGB(0, 0, 255))
+                .unwrap();
+        self.data[3] = phi.ttf_str_sprite(&data.status.to_string(),
+                            FONT_PATH,
+                            24,
+                            Color::RGB(0, 0, 255))
+            .unwrap();
+        self.data[7] =
+            phi.ttf_str_sprite(&data.tps.to_string(), FONT_PATH, 24, Color::RGB(0, 0, 255))
+                .unwrap();
     }
 
     pub fn set_fps(&mut self, phi: &mut Phi, fps: u16) {

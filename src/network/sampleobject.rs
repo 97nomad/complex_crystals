@@ -1,4 +1,18 @@
 #[derive(RustcDecodable, RustcEncodable, Clone)]
+pub struct ServerInfo {
+    pub name: String,
+    pub status: String,
+    pub tps: u16,
+}
+impl ServerInfo {
+    pub fn replace(&mut self, new_info: ServerInfo) {
+        self.name = new_info.name;
+        self.status = new_info.status;
+        self.tps = new_info.tps;
+    }
+}
+
+#[derive(RustcDecodable, RustcEncodable, Clone)]
 pub enum ObjectType {
     Asteroid,
     Builder,
