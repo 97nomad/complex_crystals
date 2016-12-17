@@ -7,7 +7,7 @@ use ::network::Network;
 use ::views::ui::{DownUI, UpUI};
 use ::views::camera::Camera;
 
-const CAMERA_SENSITIVITY: f64 = 1000.0;
+const CAMERA_SENSITIVITY: f64 = 10000.0;
 const ZOOM_SENSITIVITY: f64 = 10.0;
 const OBJECT_SIZE: f64 = 16.0;
 
@@ -72,12 +72,10 @@ impl View for GameView {
         self.up_ui.set_data(phi, info);
 
         // Чистим экран
-        phi.renderer
-            .set_draw_color(Color::RGB(0, 0, 0));
+        phi.renderer.set_draw_color(Color::RGB(0, 0, 0));
         phi.renderer.clear();
 
         // Рисуем объекты
-        phi.renderer.set_draw_color(Color::RGB(0, 0, 255));
         for obj in self.network.objects.lock().unwrap().iter() {
             match obj.otype {
                 ObjectType::Asteroid => phi.renderer.set_draw_color(Color::RGB(128, 128, 128)),
@@ -122,7 +120,7 @@ impl View for GameView {
                         print_to_downui!("owner: ", obj.owner);
                         print_to_downui!("name: ", obj.name);
                         print_to_downui!("otype: ", obj.otype);
-                        print_to_downui!("x:", obj.x);
+                        print_to_downui!("x: ", obj.x);
                         print_to_downui!("y: ", obj.y);
 
                         print_to_downui!("drive_speed: ", obj.drive_speed);

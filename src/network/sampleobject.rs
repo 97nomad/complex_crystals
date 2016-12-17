@@ -12,7 +12,7 @@ impl ServerInfo {
     }
 }
 
-#[derive(RustcDecodable, RustcEncodable, Clone)]
+#[derive(RustcDecodable, RustcEncodable, Clone, PartialEq)]
 pub enum ObjectType {
     Asteroid,
     Builder,

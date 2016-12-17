@@ -7,16 +7,14 @@ use ::phi::WIDTH;
 use ::network::sampleobject::ServerInfo;
 
 const DOWNUI_PATH: &'static str = "assets/downui.png";
-const DOWNUI_MINIMAP_PATH: &'static str = "assets/downuiminimap.png";
-const LEFT_UPUI_PATH: &'static str = "assets/leftupui.png";
-const RIGHT_UPUI_PATH: &'static str = "assets/rightupui.png";
+// const DOWNUI_MINIMAP_PATH: &'static str = "assets/downuiminimap.png";
+// const LEFT_UPUI_PATH: &'static str = "assets/leftupui.png";
+// const RIGHT_UPUI_PATH: &'static str = "assets/rightupui.png";
 const CENTER_UPUI_PATH: &'static str = "assets/centerupui.png";
-const FONT_PATH: &'static str = "assets/belligerent.ttf";
+const FONT_PATH: &'static str = "assets/slkscr.ttf";
 
 #[derive(Clone)]
 pub struct UpUI {
-    background_left: Sprite,
-    background_right: Sprite,
     background_center: Sprite,
     data: Vec<Sprite>,
 }
@@ -24,48 +22,51 @@ pub struct UpUI {
 impl UpUI {
     pub fn new(phi: &mut Phi) -> Self {
         let data = vec![
-            phi.ttf_str_sprite("FPS", FONT_PATH, 24, Color::RGB(0, 0, 255))
+            phi.ttf_str_sprite("FPS", FONT_PATH, 24, Color::RGB(255, 255, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("Player", FONT_PATH, 24, Color::RGB(0, 0, 255))
+            phi.ttf_str_sprite("Player", FONT_PATH, 24, Color::RGB(255, 255, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("ServerName", FONT_PATH, 24, Color::RGB(0, 0, 255))
+            phi.ttf_str_sprite("ServerName", FONT_PATH, 16, Color::RGB(255, 255, 255))
                 .unwrap(),
-            phi.ttf_str_sprite(" ", FONT_PATH, 24, Color::RGB(0, 0, 255))
+            phi.ttf_str_sprite(" ", FONT_PATH, 24, Color::RGB(255, 255, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("3500", FONT_PATH, 24, Color::RGB(0, 0, 255))
+            phi.ttf_str_sprite("0", FONT_PATH, 24, Color::RGB(255, 255, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("120", FONT_PATH, 24, Color::RGB(0, 0, 255))
+            phi.ttf_str_sprite("0", FONT_PATH, 24, Color::RGB(255, 255, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("10/100", FONT_PATH, 24, Color::RGB(0, 0, 255))
+            phi.ttf_str_sprite("0", FONT_PATH, 24, Color::RGB(255, 255, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("TPS", FONT_PATH, 24, Color::RGB(0, 0, 255))
+            phi.ttf_str_sprite("TPS", FONT_PATH, 24, Color::RGB(255, 255, 255))
                 .unwrap(),
         ];
         UpUI {
-            background_left: Sprite::load(&phi.renderer, LEFT_UPUI_PATH).unwrap(),
-            background_right: Sprite::load(&phi.renderer, RIGHT_UPUI_PATH).unwrap(),
             background_center: Sprite::load(&phi.renderer, CENTER_UPUI_PATH).unwrap(),
             data: data,
         }
     }
 
     pub fn set_data(&mut self, phi: &mut Phi, data: ServerInfo) {
-        self.data[2] =
-            phi.ttf_str_sprite(&data.name.to_string(), FONT_PATH, 24, Color::RGB(0, 0, 255))
-                .unwrap();
+        self.data[2] = phi.ttf_str_sprite(&data.name.to_string(),
+                            FONT_PATH,
+                            24,
+                            Color::RGB(255, 255, 255))
+            .unwrap();
         self.data[3] = phi.ttf_str_sprite(&data.status.to_string(),
                             FONT_PATH,
                             24,
-                            Color::RGB(0, 0, 255))
+                            Color::RGB(255, 255, 255))
             .unwrap();
-        self.data[7] =
-            phi.ttf_str_sprite(&data.tps.to_string(), FONT_PATH, 24, Color::RGB(0, 0, 255))
-                .unwrap();
+        self.data[7] = phi.ttf_str_sprite(&data.tps.to_string(),
+                            FONT_PATH,
+                            24,
+                            Color::RGB(255, 255, 255))
+            .unwrap();
     }
 
     pub fn set_fps(&mut self, phi: &mut Phi, fps: u16) {
-        self.data[0] = phi.ttf_str_sprite(&fps.to_string(), FONT_PATH, 24, Color::RGB(0, 0, 255))
-            .unwrap();
+        self.data[0] =
+            phi.ttf_str_sprite(&fps.to_string(), FONT_PATH, 24, Color::RGB(255, 255, 255))
+                .unwrap();
     }
 
     pub fn render(&mut self, phi: &mut Phi) {
@@ -91,7 +92,6 @@ impl UpUI {
 #[derive(Clone)]
 pub struct DownUI {
     background: Sprite,
-    minimap_background: Sprite,
     data: Vec<Sprite>,
 }
 
@@ -99,7 +99,6 @@ impl DownUI {
     pub fn new(phi: &mut Phi) -> Self {
         DownUI {
             background: Sprite::load(&phi.renderer, DOWNUI_PATH).unwrap(),
-            minimap_background: Sprite::load(&phi.renderer, DOWNUI_MINIMAP_PATH).unwrap(),
             data: vec![],
         }
     }
@@ -109,7 +108,8 @@ impl DownUI {
     }
 
     pub fn add_data(&mut self, phi: &mut Phi, data: String) {
-        self.data.push(phi.ttf_str_sprite(&data, FONT_PATH, 18, Color::RGB(255, 0, 0)).unwrap());
+        self.data
+            .push(phi.ttf_str_sprite(&data, FONT_PATH, 18, Color::RGB(255, 255, 255)).unwrap());
     }
 
     pub fn render(&mut self, phi: &mut Phi) {
@@ -117,37 +117,28 @@ impl DownUI {
         let width_coeff = phi.width_coeff;
         let height_coeff = phi.height_coeff;
 
-        let minimap_w = self.minimap_background.width() * width_coeff;
-        let minimap_h = self.minimap_background.height() * height_coeff;
-        phi.renderer.copy_sprite(&self.minimap_background,
-                                 Rectangle {
-                                     x: 0.0,
-                                     y: h - minimap_h,
-                                     w: minimap_w,
-                                     h: minimap_h,
-                                 });
         let bg_w = self.background.width() * width_coeff;
-        let bg_h = self.background.height() * height_coeff;
+        let bg_h = self.background.height() * (w / self.background.width()) * height_coeff;
         phi.renderer.copy_sprite(&self.background,
                                  Rectangle {
-                                     x: minimap_w,
+                                     x: 0.0,
                                      y: h - bg_h,
-                                     w: bg_w,
+                                     w: w,
                                      h: bg_h,
                                  });
 
         self.draw_unit_info(phi,
                             Rectangle {
-                                x: minimap_w + (275.0 * width_coeff),
-                                y: h - bg_h + (125.0 * height_coeff),
-                                w: 100.0,
-                                h: 100.0,
+                                x: 275.0 * width_coeff,
+                                y: h - bg_h + (50.0 * height_coeff),
+                                w: 1000.0,
+                                h: 1000.0,
                             });
     }
 
     fn draw_unit_info(&mut self, phi: &mut Phi, dest: Rectangle) {
-        const MAX_ELEMENTS_IN_COLUMN: u16 = 5;
-        const COLUMN_WIDTH: f64 = 200.0;
+        const MAX_ELEMENTS_IN_COLUMN: u16 = 7;
+        const COLUMN_WIDTH: f64 = 300.0;
         const BORDER: f64 = 10.0;
         let mut element = 0;
         let mut rect = Rectangle {

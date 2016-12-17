@@ -122,15 +122,11 @@ impl Action {
     fn new(phi: &mut Phi, label: &'static str, func: Box<Fn(&mut Phi) -> ViewAction>) -> Self {
         Action {
             func: func,
-            idle_sprite: phi.ttf_str_sprite(label,
-                                "assets/belligerent.ttf",
-                                32,
-                                Color::RGB(220, 220, 220))
+            idle_sprite:
+                phi.ttf_str_sprite(label, "assets/slkscr.ttf", 32, Color::RGB(220, 220, 220))
                 .unwrap(),
-            hover_sprite: phi.ttf_str_sprite(label,
-                                "assets/belligerent.ttf",
-                                38,
-                                Color::RGB(255, 255, 255))
+            hover_sprite:
+                phi.ttf_str_sprite(label, "assets/slkscr.ttf", 38, Color::RGB(255, 255, 255))
                 .unwrap(),
         }
     }
