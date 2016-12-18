@@ -78,7 +78,7 @@ impl NetworkRequest {
             .headers(headers)
             .send() {
             Ok(data) => data,
-            Err(e) => {
+            Err(_) => {
                 panic!("Сервер не ответил на запрос");
             }
         };
@@ -108,7 +108,7 @@ impl NetworkRequest {
             .headers(headers)
             .send() {
             Ok(data) => data,
-            Err(e) => {
+            Err(_) => {
                 panic!("Сервер не ответил на запрос");
             }
         };
@@ -141,7 +141,7 @@ impl NetworkRequest {
             .headers(headers)
             .send() {
             Ok(data) => data,
-            Err(e) => {
+            Err(_) => {
                 panic!("Сервер не ответил на запрос");
             }
         };

@@ -1,4 +1,3 @@
-use ::sdl2::render::Renderer;
 use ::sdl2::pixels::Color;
 use ::phi::gfx::{Sprite, CopySprite};
 use ::phi::data::Rectangle;

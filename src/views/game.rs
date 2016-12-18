@@ -1,7 +1,6 @@
 use ::phi::{Phi, View, ViewAction};
 use ::sdl2::pixels::Color;
 use ::phi::data::Rectangle;
-use ::phi::gfx::{Sprite, CopySprite};
 use ::network::sampleobject::ObjectType;
 use ::network::Network;
 use ::views::ui::{DownUI, UpUI};
@@ -81,20 +80,10 @@ impl View for GameView {
         for obj in self.network.objects.lock().unwrap().iter() {
             match obj.otype {
                 ObjectType::Asteroid => phi.renderer.set_draw_color(Color::RGB(128, 128, 128)),
-                ObjectType::Builder => phi.renderer.set_draw_color(Color::RGB(0,0,128)),
+                ObjectType::Builder => phi.renderer.set_draw_color(Color::RGB(0, 0, 128)),
                 ObjectType::Harvester => phi.renderer.set_draw_color(Color::RGB(0, 255, 0)),
                 ObjectType::Battlecruiser => phi.renderer.set_draw_color(Color::RGB(255, 0, 0)),
             }
-
-            //let name = ObjectName::new(phi, &obj.name);
-            //let (w, h) = name.sprite.size();
-            /*phi.renderer.copy_sprite(&name.sprite,
-                                     self.camera.translate_rect(Rectangle {
-                                         w: w,
-                                         h: h,
-                                         x: obj.x - (h * 1.5),
-                                         y: obj.y + (w / 2.0),
-                                     }));*/
 
             draw_object(phi, &self.camera, obj.x, obj.y);
         }
@@ -149,15 +138,17 @@ impl View for GameView {
         }
 
         let world_size = self.network.world_size.lock().unwrap();
-        phi.renderer.draw_rect(self.camera
-            .translate_rect(Rectangle {
-                x: 0.0,
-                y: 0.0,
-                w: world_size.width,
-                h: world_size.height,
-            })
-            .to_sdl()
-            .unwrap());
+        phi.renderer
+            .draw_rect(self.camera
+                .translate_rect(Rectangle {
+                    x: 0.0,
+                    y: 0.0,
+                    w: world_size.width,
+                    h: world_size.height,
+                })
+                .to_sdl()
+                .unwrap())
+            .unwrap();
         self.camera.resize(world_size.width, world_size.height);
 
         // Рисуем UI
@@ -173,19 +164,6 @@ impl View for GameView {
                             });
 
         ViewAction::None
-    }
-}
-
-struct ObjectName {
-    sprite: Sprite,
-}
-
-impl ObjectName {
-    pub fn new(phi: &mut Phi, label: &String) -> Self {
-        ObjectName {
-            sprite: phi.ttf_str_sprite(&label, "assets/belligerent.ttf", 16, Color::RGB(0, 0, 255))
-                .unwrap(),
-        }
     }
 }
 

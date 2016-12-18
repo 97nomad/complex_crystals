@@ -24,48 +24,7 @@ impl Rectangle {
         }
     }
 
-    pub fn move_inside(self, parent: Rectangle) -> Option<Rectangle> {
-        if self.w > parent.w || self.h > parent.h {
-            return None;
-        }
-
-        Some(Rectangle {
-            w: self.w,
-            h: self.h,
-            x: if self.x < parent.x {
-                parent.x
-            } else if self.x + self.w >= parent.x + parent.w {
-                parent.x + parent.w - self.w
-            } else {
-                self.x
-            },
-            y: if self.y < parent.y {
-                parent.y
-            } else if self.y + self.h >= parent.y + parent.h {
-                parent.y + parent.h - self.h
-            } else {
-                self.y
-            },
-        })
-    }
-
-    pub fn contains(&self, rect: Rectangle) -> bool {
-        let xmin = rect.x;
-        let xmax = xmin + rect.w;
-        let ymin = rect.y;
-        let ymax = ymin + rect.h;
-
-        xmin >= self.x && xmin <= self.x + self.w && xmax >= self.x &&
-        xmax <= self.x + self.w && ymin >= self.y && ymin <= self.y + self.h &&
-        ymax >= self.y && ymax <= self.y + self.h
-    }
-
     pub fn contains_point(&self, x: f64, y: f64) -> bool {
         x >= self.x && x <= self.x + self.w && y >= self.y && y <= self.y + self.h
-    }
-
-    pub fn overlaps(&self, other: Rectangle) -> bool {
-        self.x < other.x + other.w && self.x + self.w > other.x && self.y < other.y + other.h &&
-        self.y + self.h > other.y
     }
 }
