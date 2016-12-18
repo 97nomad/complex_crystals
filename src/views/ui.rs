@@ -112,27 +112,21 @@ impl DownUI {
             .push(phi.ttf_str_sprite(&data, FONT_PATH, 18, Color::RGB(255, 255, 255)).unwrap());
     }
 
-    pub fn render(&mut self, phi: &mut Phi) {
-        let (w, h) = phi.output_size();
-        let width_coeff = phi.width_coeff;
-        let height_coeff = phi.height_coeff;
-
-        let bg_w = self.background.width() * width_coeff;
-        let bg_h = self.background.height() * (w / self.background.width()) * height_coeff;
+    pub fn render(&mut self, phi: &mut Phi, rect: Rectangle) {
         phi.renderer.copy_sprite(&self.background,
                                  Rectangle {
-                                     x: 0.0,
-                                     y: h - bg_h,
-                                     w: w,
-                                     h: bg_h,
+                                     x: rect.x,
+                                     y: rect.y,
+                                     w: rect.w,
+                                     h: rect.h,
                                  });
 
         self.draw_unit_info(phi,
                             Rectangle {
-                                x: 275.0 * width_coeff,
-                                y: h - bg_h + (50.0 * height_coeff),
-                                w: 1000.0,
-                                h: 1000.0,
+                                x: rect.w * 0.25,
+                                y: rect.y + rect.h * 0.08,
+                                w: rect.w - rect.w * 0.3,
+                                h: rect.h - (rect.y + rect.h * 0.2),
                             });
     }
 

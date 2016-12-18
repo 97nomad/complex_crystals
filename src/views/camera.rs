@@ -28,37 +28,53 @@ impl Camera {
     pub fn resize(&mut self, width: f64, height: f64) {
         self.max_x = width;
         self.max_y = height;
+        self.check();
     }
 
     pub fn move_left(&mut self, d: f64) {
         self.pos_x -= d;
-        if self.pos_x < 0.0 - BORDER {
-            self.pos_x = 0.0 - BORDER;
-        }
+        self.check();
     }
     pub fn move_right(&mut self, d: f64) {
         self.pos_x += d;
-        if self.pos_x * self.zoom > self.max_x - self.width / self.zoom + BORDER {
-            self.pos_x = self.max_x - self.width / self.zoom + BORDER;
-        }
+        self.check();
     }
     pub fn move_up(&mut self, d: f64) {
         self.pos_y -= d;
-        if self.pos_y < 0.0 - BORDER {
-            self.pos_y = 0.0 - BORDER;
-        }
+        self.check();
     }
     pub fn move_down(&mut self, d: f64) {
         self.pos_y += d;
-        if self.pos_y > self.max_y - self.height / self.zoom + BORDER {
-            self.pos_y = self.max_y - self.height / self.zoom + BORDER;
-        }
+        self.check();
     }
 
     pub fn zoom(&mut self, d: f64) {
         self.zoom += d;
         if self.zoom < ZOOM_MIN {
             self.zoom = ZOOM_MIN;
+        }
+        self.check();
+    }
+
+    fn check(&mut self) {
+        // Нижняя граница
+        if self.pos_y > self.max_y - self.height / self.zoom + BORDER {
+            self.pos_y = self.max_y - self.height / self.zoom + BORDER;
+        }
+
+        // Правая граница
+        if self.pos_x * self.zoom > self.max_x - self.width / self.zoom + BORDER {
+            self.pos_x = self.max_x - self.width / self.zoom + BORDER;
+        }
+
+        // Верхняя граница
+        if self.pos_y < 0.0 - BORDER {
+            self.pos_y = 0.0 - BORDER;
+        }
+
+        // Левая граница
+        if self.pos_x < 0.0 - BORDER {
+            self.pos_x = 0.0 - BORDER;
         }
     }
 

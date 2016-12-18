@@ -162,7 +162,15 @@ impl View for GameView {
 
         // Рисуем UI
         self.up_ui.render(phi);
-        self.down_ui.render(phi);
+        let (width, height) = phi.output_size();
+        let down_ui_height = height * 0.3;
+        self.down_ui.render(phi,
+                            Rectangle {
+                                x: 0.0,
+                                y: height - down_ui_height,
+                                w: width,
+                                h: down_ui_height,
+                            });
 
         ViewAction::None
     }
