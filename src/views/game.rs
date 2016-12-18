@@ -22,10 +22,11 @@ pub struct GameView {
 
 impl GameView {
     pub fn new(phi: &mut Phi) -> Self {
+        let (width, height) = phi.output_size();
         GameView {
             network: Network::new(),
             network_timer: 0.0,
-            camera: Camera::new(),
+            camera: Camera::new(0.0, 0.0, 0.0, 0.0, width, height),
             up_ui: UpUI::new(phi),
             down_ui: DownUI::new(phi),
         }
@@ -60,6 +61,7 @@ impl View for GameView {
         if self.network_timer >= 1.0 {
             self.network.update("http://localhost:3000/objects");
             self.network.update_info("http://localhost:3000/info");
+            self.network.update_world_size("http://localhost:3000/world_size");
             self.network_timer = 0.0;
         }
 
@@ -145,6 +147,18 @@ impl View for GameView {
                 }
             }
         }
+
+        let world_size = self.network.world_size.lock().unwrap();
+        phi.renderer.draw_rect(self.camera
+            .translate_rect(Rectangle {
+                x: 0.0,
+                y: 0.0,
+                w: world_size.width,
+                h: world_size.height,
+            })
+            .to_sdl()
+            .unwrap());
+        self.camera.resize(world_size.width, world_size.height);
 
         // Рисуем UI
         self.up_ui.render(phi);

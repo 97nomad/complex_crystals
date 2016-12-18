@@ -12,6 +12,18 @@ impl ServerInfo {
     }
 }
 
+#[derive(RustcDecodable)]
+pub struct WorldSize {
+    pub width: f64,
+    pub height: f64,
+}
+impl WorldSize {
+    pub fn replace(&mut self, new_size: WorldSize) {
+        self.width = new_size.width;
+        self.height = new_size.height;
+    }
+}
+
 #[derive(RustcDecodable, RustcEncodable, Clone, PartialEq)]
 pub enum ObjectType {
     Asteroid,
