@@ -63,6 +63,15 @@ pub enum ArmorType {
     Building,
 }
 
+#[derive(RustcDecodable)]
+pub struct ObjectResponse {
+    pub name: String,
+    pub owner: String,
+    pub x: f64,
+    pub y: f64,
+    pub otype: ObjectType,
+}
+
 #[derive(RustcDecodable, RustcEncodable, Clone)]
 pub struct SampleObject {
     pub owner: String,

@@ -1,4 +1,5 @@
 use ::phi::data::Rectangle;
+use ::sdl2::rect::Point;
 
 const ZOOM_MIN: f64 = 0.01;
 const BORDER: f64 = 50.0;
@@ -85,5 +86,9 @@ impl Camera {
             w: rect.w * self.zoom,
             h: rect.h * self.zoom,
         }
+    }
+    pub fn create_point(&self, x: f64, y: f64) -> Point {
+        Point::new(((x - self.pos_x) * self.zoom) as i32,
+                   ((y - self.pos_y) * self.zoom) as i32)
     }
 }

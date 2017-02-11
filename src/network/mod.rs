@@ -6,11 +6,19 @@ use hyper::header::{Authorization, Basic, Headers};
 use std::io::Read;
 use std::sync::{Arc, Mutex};
 use std::thread;
+use std::collections::HashMap;
 
-use self::sampleobject::{SampleObject, ServerInfo, WorldSize};
+use self::sampleobject::{SampleObject, ObjectResponse, ServerInfo, WorldSize};
+
+const OBJECTS_UPDATE_ARRD: &'static str = "http://localhost:3000/objects";
+const SERVERINFO_UPDATE_ADDR: &'static str = "http://localhost:3000/info";
+const WORLDSIZE_UPDATE_ADDR: &'static str = "http://localhost:3000/world_size";
+const USERNAME: &'static str = "admin";
 
 pub struct Network {
-    pub objects: Arc<Mutex<Vec<SampleObject>>>,
+    pub df_select_object: bool,
+    pub select_object: Arc<Mutex<Option<SampleObject>>>,
+    pub objects: Arc<Mutex<HashMap<String, ObjectResponse>>>,
     pub server_info: Arc<Mutex<ServerInfo>>,
     pub world_size: Arc<Mutex<WorldSize>>,
 }
@@ -18,7 +26,9 @@ pub struct Network {
 impl Network {
     pub fn new() -> Self {
         Network {
-            objects: Arc::new(Mutex::new(vec![])),
+            df_select_object: true,
+            select_object: Arc::new(Mutex::new(None)),
+            objects: Arc::new(Mutex::new(HashMap::new())),
             server_info: Arc::new(Mutex::new(ServerInfo {
                 name: "ServerName".to_owned(),
                 status: "SomeStatus".to_owned(),
@@ -31,60 +41,48 @@ impl Network {
         }
     }
 
-    pub fn update(&mut self, addr: &str) {
+    pub fn update_objects(&mut self) {
+        let addr = Url::parse(OBJECTS_UPDATE_ARRD).unwrap();
         let objects = self.objects.clone();
-        let addr = match Url::parse(addr) {
-            Ok(addr) => addr,
-            Err(e) => {
-                panic!("{:?}", e);
-            }
-        };
         thread::spawn(move || NetworkRequest::update_objects(objects, addr));
     }
-    pub fn update_info(&mut self, addr: &str) {
-        let info = self.server_info.clone();
-        let addr = match Url::parse(addr) {
-            Ok(addr) => addr,
-            Err(e) => {
-                panic!("{:?}", e);
-            }
-        };
-        thread::spawn(move || NetworkRequest::update_server_info(info, addr));
+    pub fn update_info(&mut self) {
+        let addr = Url::parse(SERVERINFO_UPDATE_ADDR).unwrap();
+        let server_info = self.server_info.clone();
+        thread::spawn(move || NetworkRequest::update_server_info(server_info, addr));
     }
-    pub fn update_world_size(&mut self, addr: &str) {
-        let worldsize = self.world_size.clone();
-        let addr = match Url::parse(addr) {
-            Ok(addr) => addr,
-            Err(e) => {
-                panic!("{:?}", e);
-            }
-        };
-        thread::spawn(move || NetworkRequest::update_world_size(worldsize, addr));
+    pub fn update_world_size(&mut self) {
+        let addr = Url::parse(WORLDSIZE_UPDATE_ADDR).unwrap();
+        let world_size = self.world_size.clone();
+        thread::spawn(move || NetworkRequest::update_world_size(world_size, addr));
     }
 }
 
 struct NetworkRequest {}
 
 impl NetworkRequest {
-    fn update_objects(objects: Arc<Mutex<Vec<SampleObject>>>, addr: Url) {
+    fn request(addr: Url) -> String {
         let client = Client::new();
 
         let mut headers = Headers::new();
         headers.set(Authorization(Basic {
-            username: "admin".to_owned(),
+            username: USERNAME.to_owned(),
             password: None,
         }));
-        let mut response = match client.get(addr)
-            .headers(headers)
-            .send() {
+
+        let mut response = match client.get(addr).headers(headers).send() {
             Ok(data) => data,
-            Err(_) => {
-                panic!("Сервер не ответил на запрос");
-            }
+            Err(_) => panic!("Сервер не ответил на запрос"),
         };
-        let mut response_string = String::new();
-        response.read_to_string(&mut response_string).unwrap();
-        let mut parsed_objects: Vec<SampleObject> = match json::decode(&response_string) {
+        let mut result_string = String::new();
+        response.read_to_string(&mut result_string).unwrap();
+        result_string
+    }
+
+    fn update_objects(objects: Arc<Mutex<HashMap<String, ObjectResponse>>>, addr: Url) {
+        let data = NetworkRequest::request(addr);
+
+        let mut parsed_objects: Vec<ObjectResponse> = match json::decode(&data) {
             Err(e) => {
                 println!("Json parsing error: {:?}", e);
                 vec![]
@@ -92,29 +90,15 @@ impl NetworkRequest {
             Ok(data) => data,
         };
         let mut objects = objects.lock().unwrap();
-        objects.drain(..);
-        objects.append(&mut parsed_objects);
+        objects.clear();
+        for object in parsed_objects {
+            objects.insert(object.name.clone(), object);
+        }
     }
 
     fn update_server_info(server_info: Arc<Mutex<ServerInfo>>, addr: Url) {
-        let client = Client::new();
-
-        let mut headers = Headers::new();
-        headers.set(Authorization(Basic {
-            username: "admin".to_owned(),
-            password: None,
-        }));
-        let mut response = match client.get(addr)
-            .headers(headers)
-            .send() {
-            Ok(data) => data,
-            Err(_) => {
-                panic!("Сервер не ответил на запрос");
-            }
-        };
-        let mut response_string = String::new();
-        response.read_to_string(&mut response_string).unwrap();
-        let parsed_info: ServerInfo = match json::decode(&response_string) {
+        let data = NetworkRequest::request(addr);
+        let parsed_info: ServerInfo = match json::decode(&data) {
             Err(e) => {
                 println!("Json parsing error: {:?}", e);
                 ServerInfo {
@@ -130,24 +114,8 @@ impl NetworkRequest {
     }
 
     fn update_world_size(world_size: Arc<Mutex<WorldSize>>, addr: Url) {
-        let client = Client::new();
-
-        let mut headers = Headers::new();
-        headers.set(Authorization(Basic {
-            username: "admin".to_owned(),
-            password: None,
-        }));
-        let mut response = match client.get(addr)
-            .headers(headers)
-            .send() {
-            Ok(data) => data,
-            Err(_) => {
-                panic!("Сервер не ответил на запрос");
-            }
-        };
-        let mut response_string = String::new();
-        response.read_to_string(&mut response_string).unwrap();
-        let parsed_info: WorldSize = match json::decode(&response_string) {
+        let data = NetworkRequest::request(addr);
+        let parsed_info: WorldSize = match json::decode(&data) {
             Err(e) => {
                 println!("Json parsing error: {:?}", e);
                 WorldSize {
