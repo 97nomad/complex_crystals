@@ -46,12 +46,12 @@ impl<'window> Phi<'window> {
 
     pub fn ttf_str_sprite(&mut self,
                           text: &str,
-                          font_path: &'static str,
+                          font_name: &'static str,
                           size: u16,
                           color: Color)
                           -> Option<Sprite> {
 
-        if let Some(font) = self.cached_fonts.get(&(font_path, size)) {
+        if let Some(font) = self.cached_fonts.get(&(font_name, size)) {
             return font.render(text)
                 .blended(color)
                 .ok()
@@ -59,7 +59,8 @@ impl<'window> Phi<'window> {
                 .map(Sprite::new);
         }
         self.ttf_context
-            .load_font(Path::new(font_path), size)
+            .load_font(Path::new(format!("assets/fonts/{}.ttf", font_name).as_str()),
+                       size)
             .ok()
             .and_then(|font| {
                 font.render(text)

@@ -12,12 +12,14 @@ const CAMERA_SENSITIVITY: f64 = 10000.0;
 const ZOOM_SENSITIVITY: f64 = 10.0;
 const OBJECT_SIZE: f64 = 16.0;
 
-const FONT_PATH: &'static str = "assets/slkscr.ttf";
+const FONTNAME: &'static str = "slkscr";
 
 pub struct GameView {
     network: Network,
-    network_timer: f64,
     camera: Camera,
+
+    one_second_timer: f64,
+    one_minute_timer: f64,
 
     up_ui: UpUI,
     down_ui: DownUI,
@@ -33,16 +35,17 @@ impl GameView {
         let (width, height) = phi.output_size();
         GameView {
             network: Network::new(),
-            network_timer: 0.0,
+            one_minute_timer: 60.0,
+            one_second_timer: 1.0,
             camera: Camera::new(0.0, 0.0, 0.0, 0.0, width, height),
             up_ui: UpUI::new(phi),
             down_ui: DownUI::new(phi),
-            asteroid_sprite: phi.ttf_str_sprite("A", FONT_PATH, 12, Color::RGB(128, 128, 128))
+            asteroid_sprite: phi.ttf_str_sprite("A", FONTNAME, 12, Color::RGB(128, 128, 128))
                 .unwrap(),
-            builder_sprite: phi.ttf_str_sprite("B", FONT_PATH, 12, Color::RGB(0, 0, 200)).unwrap(),
-            harvester_sprite: phi.ttf_str_sprite("H", FONT_PATH, 12, Color::RGB(0, 200, 0))
+            builder_sprite: phi.ttf_str_sprite("B", FONTNAME, 12, Color::RGB(0, 0, 200)).unwrap(),
+            harvester_sprite: phi.ttf_str_sprite("H", FONTNAME, 12, Color::RGB(0, 200, 0))
                 .unwrap(),
-            battlecruiser_sprite: phi.ttf_str_sprite("C", FONT_PATH, 12, Color::RGB(200, 0, 0))
+            battlecruiser_sprite: phi.ttf_str_sprite("C", FONTNAME, 12, Color::RGB(200, 0, 0))
                 .unwrap(),
         }
     }
@@ -72,12 +75,16 @@ impl View for GameView {
         }
 
         // Работа с сетью тут
-        self.network_timer += elapsed;
-        if self.network_timer >= 1.0 {
+        self.one_second_timer += elapsed;
+        self.one_minute_timer += elapsed;
+        if self.one_second_timer >= 1.0 {
             self.network.update_objects();
+            self.one_second_timer = 0.0;
+        }
+        if self.one_minute_timer >= 60.0 {
             self.network.update_info();
             self.network.update_world_size();
-            self.network_timer = 0.0;
+            self.one_minute_timer = 0.0;
         }
 
         let fps = phi.fps;
@@ -112,55 +119,30 @@ impl View for GameView {
                                          }))
         }
 
-        // match phi.events.now.left_mouse_click {
-        //     None => {}
-        //     Some((x, y)) => {
-        //         let cursor_rect = Rectangle {
-        //             x: x as f64 - OBJECT_SIZE / 2.0 * self.camera.zoom,
-        //             y: y as f64 - OBJECT_SIZE / 2.0 * self.camera.zoom,
-        //             w: OBJECT_SIZE * self.camera.zoom,
-        //             h: OBJECT_SIZE * self.camera.zoom,
-        //         };
+        // Обработка тычка мышкой
+        match phi.events.now.left_mouse_click {
+            None => {}
+            Some((x, y)) => {
+                let cursor_rect = Rectangle {
+                    x: x as f64 - OBJECT_SIZE / 2.0 * self.camera.zoom,
+                    y: y as f64 - OBJECT_SIZE / 2.0 * self.camera.zoom,
+                    w: OBJECT_SIZE * self.camera.zoom,
+                    h: OBJECT_SIZE * self.camera.zoom,
+                };
 
-        //         self.down_ui.clear_data();
+                self.down_ui.clear_data();
+            }
+        }
 
-        //         macro_rules! print_to_downui {  // Макрос для нижнего UI
-        //         ($str1: expr, $str2: expr) => {
-        //                 self.down_ui.add_data(phi, $str1.to_string() + &$str2.to_string());
-        //             }
-        //         }
-        //         for obj in self.network.objects.lock().unwrap().iter() {
-        //             if cursor_rect.contains_point((obj.x - self.camera.pos_x) * self.camera.zoom,
-        //                                           (obj.y - self.camera.pos_y) * self.camera.zoom) {
-        //                 print_to_downui!("owner: ", obj.owner);
-        //                 print_to_downui!("name: ", obj.name);
-        //                 print_to_downui!("otype: ", obj.otype);
-        //                 print_to_downui!("x: ", obj.x);
-        //                 print_to_downui!("y: ", obj.y);
+        // Отрисовка выбранного объекта в случае изменения грязного флага
+        macro_rules! print_to_downui {  // Макрос для нижнего UI
+                ($str1: expr, $str2: expr) => {
+                        self.down_ui.add_data(phi, $str1.to_string() + &$str2.to_string());
+                    }
+                }
 
-        //                 print_to_downui!("drive_speed: ", obj.drive_speed);
-        //                 print_to_downui!("drive_dest_x: ", obj.drive_dest_x);
-        //                 print_to_downui!("drive_dest_y: ", obj.drive_dest_y);
-        //                 print_to_downui!("radar_radius: ", obj.radar_radius);
-        //                 print_to_downui!("radar_type: ", obj.radar_type);
-
-        //                 print_to_downui!("weapon_active: ", obj.weapon_active);
-        //                 print_to_downui!("weapon_type: ", obj.weapon_type);
-        //                 print_to_downui!("weapon_radius: ", obj.weapon_radius);
-        //                 print_to_downui!("weapon_target_x: ", obj.weapon_target_x);
-        //                 print_to_downui!("weapon_target_y: ", obj.weapon_target_y);
-
-        //                 print_to_downui!("cargo_type: ", obj.cargo_type);
-        //                 print_to_downui!("cargo_max: ", obj.cargo_max);
-        //                 print_to_downui!("cargo_current: ", obj.cargo_current);
-        //                 print_to_downui!("shell_health: ", obj.shell_health);
-        //                 print_to_downui!("shell_type: ", obj.shell_type);
-        //                 break;
-        //             }
-        //         }
-        //     }
-        // }
-
+        // Рисуем рамку вокруг мира
+        phi.renderer.set_draw_color(Color::RGB(255, 255, 255));
         let world_size = self.network.world_size.lock().unwrap();
         phi.renderer
             .draw_rect(self.camera

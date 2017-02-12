@@ -10,7 +10,7 @@ const DOWNUI_PATH: &'static str = "assets/downui.png";
 // const LEFT_UPUI_PATH: &'static str = "assets/leftupui.png";
 // const RIGHT_UPUI_PATH: &'static str = "assets/rightupui.png";
 const CENTER_UPUI_PATH: &'static str = "assets/centerupui.png";
-const FONT_PATH: &'static str = "assets/slkscr.ttf";
+const FONTNAME: &'static str = "slkscr";
 
 #[derive(Clone)]
 pub struct UpUI {
@@ -21,21 +21,21 @@ pub struct UpUI {
 impl UpUI {
     pub fn new(phi: &mut Phi) -> Self {
         let data = vec![
-            phi.ttf_str_sprite("FPS", FONT_PATH, 24, Color::RGB(255, 255, 255))
+            phi.ttf_str_sprite("FPS", FONTNAME, 24, Color::RGB(255, 255, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("Player", FONT_PATH, 24, Color::RGB(255, 255, 255))
+            phi.ttf_str_sprite("Player", FONTNAME, 24, Color::RGB(255, 255, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("ServerName", FONT_PATH, 16, Color::RGB(255, 255, 255))
+            phi.ttf_str_sprite("ServerName", FONTNAME, 16, Color::RGB(255, 255, 255))
                 .unwrap(),
-            phi.ttf_str_sprite(" ", FONT_PATH, 24, Color::RGB(255, 255, 255))
+            phi.ttf_str_sprite(" ", FONTNAME, 24, Color::RGB(255, 255, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("0", FONT_PATH, 24, Color::RGB(255, 255, 255))
+            phi.ttf_str_sprite("0", FONTNAME, 24, Color::RGB(255, 255, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("0", FONT_PATH, 24, Color::RGB(255, 255, 255))
+            phi.ttf_str_sprite("0", FONTNAME, 24, Color::RGB(255, 255, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("0", FONT_PATH, 24, Color::RGB(255, 255, 255))
+            phi.ttf_str_sprite("0", FONTNAME, 24, Color::RGB(255, 255, 255))
                 .unwrap(),
-            phi.ttf_str_sprite("TPS", FONT_PATH, 24, Color::RGB(255, 255, 255))
+            phi.ttf_str_sprite("TPS", FONTNAME, 24, Color::RGB(255, 255, 255))
                 .unwrap(),
         ];
         UpUI {
@@ -46,26 +46,25 @@ impl UpUI {
 
     pub fn set_data(&mut self, phi: &mut Phi, data: ServerInfo) {
         self.data[2] = phi.ttf_str_sprite(&data.name.to_string(),
-                            FONT_PATH,
+                            FONTNAME,
                             24,
                             Color::RGB(255, 255, 255))
             .unwrap();
         self.data[3] = phi.ttf_str_sprite(&data.status.to_string(),
-                            FONT_PATH,
+                            FONTNAME,
                             24,
                             Color::RGB(255, 255, 255))
             .unwrap();
         self.data[7] = phi.ttf_str_sprite(&data.tps.to_string(),
-                            FONT_PATH,
+                            FONTNAME,
                             24,
                             Color::RGB(255, 255, 255))
             .unwrap();
     }
 
     pub fn set_fps(&mut self, phi: &mut Phi, fps: u16) {
-        self.data[0] =
-            phi.ttf_str_sprite(&fps.to_string(), FONT_PATH, 24, Color::RGB(255, 255, 255))
-                .unwrap();
+        self.data[0] = phi.ttf_str_sprite(&fps.to_string(), FONTNAME, 24, Color::RGB(255, 255, 255))
+            .unwrap();
     }
 
     pub fn render(&mut self, phi: &mut Phi) {
@@ -108,7 +107,7 @@ impl DownUI {
 
     pub fn add_data(&mut self, phi: &mut Phi, data: String) {
         self.data
-            .push(phi.ttf_str_sprite(&data, FONT_PATH, 18, Color::RGB(255, 255, 255)).unwrap());
+            .push(phi.ttf_str_sprite(&data, FONTNAME, 18, Color::RGB(255, 255, 255)).unwrap());
     }
 
     pub fn render(&mut self, phi: &mut Phi, rect: Rectangle) {
