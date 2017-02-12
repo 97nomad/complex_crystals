@@ -8,8 +8,6 @@ use ::network::Network;
 use ::views::ui::{DownUI, UpUI};
 use ::views::camera::Camera;
 
-const CAMERA_SENSITIVITY: f64 = 10000.0;
-const ZOOM_SENSITIVITY: f64 = 10.0;
 const OBJECT_SIZE: f64 = 16.0;
 
 const FONTNAME: &'static str = "slkscr";
@@ -58,21 +56,12 @@ impl View for GameView {
         }
 
         // Передвижение камеры и зум
-        if phi.events.now.key_up {
-            self.camera.move_up(CAMERA_SENSITIVITY * elapsed);
-        }
-        if phi.events.now.key_down {
-            self.camera.move_down(CAMERA_SENSITIVITY * elapsed);
-        }
-        if phi.events.now.key_left {
-            self.camera.move_left(CAMERA_SENSITIVITY * elapsed);
-        }
-        if phi.events.now.key_right {
-            self.camera.move_right(CAMERA_SENSITIVITY * elapsed);
-        }
-        if phi.events.now.mouse_wheel != 0 {
-            self.camera.zoom(ZOOM_SENSITIVITY * elapsed * phi.events.now.mouse_wheel as f64);
-        }
+        self.camera.handle_input(phi.events.now.key_up,
+                                 phi.events.now.key_down,
+                                 phi.events.now.key_left,
+                                 phi.events.now.key_right,
+                                 phi.events.now.mouse_wheel,
+                                 elapsed);
 
         // Работа с сетью тут
         self.one_second_timer += elapsed;
@@ -89,6 +78,8 @@ impl View for GameView {
 
         let fps = phi.fps;
         self.up_ui.set_fps(phi, fps); // Обновление FPS
+
+        // Обновление информации о сервере
         let info;
         {
             info = self.network.server_info.lock().unwrap().clone();
@@ -101,7 +92,6 @@ impl View for GameView {
 
         // Рисуем объекты
         for (_, obj) in self.network.objects.lock().unwrap().iter() {
-
             let sprite = match obj.otype {
                 ObjectType::Asteroid => &self.asteroid_sprite,
                 ObjectType::Builder => &self.builder_sprite,
@@ -171,23 +161,4 @@ impl View for GameView {
 
         ViewAction::None
     }
-}
-
-fn draw_object(phi: &mut Phi, camera: &Camera, x: f64, y: f64) {
-    phi.renderer
-        .fill_rect(camera.translate_rect(Rectangle {
-                x: x - OBJECT_SIZE / 2.0,
-                y: y - OBJECT_SIZE / 2.0,
-                w: OBJECT_SIZE,
-                h: OBJECT_SIZE,
-            })
-            .to_sdl()
-            .unwrap())
-        .unwrap();
-}
-
-fn draw_path(phi: &mut Phi, camera: &Camera, x1: f64, y1: f64, x2: f64, y2: f64) {
-    let start = camera.create_point(x1, y1);
-    let end = camera.create_point(x2, y2);
-    phi.renderer.draw_line(start, end);
 }

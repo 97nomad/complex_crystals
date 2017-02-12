@@ -3,6 +3,8 @@ use ::sdl2::rect::Point;
 
 const ZOOM_MIN: f64 = 0.01;
 const BORDER: f64 = 50.0;
+const CAMERA_SENSITIVITY: f64 = 10000.0;
+const ZOOM_SENSITIVITY: f64 = 10.0;
 
 pub struct Camera {
     pub pos_x: f64,
@@ -26,30 +28,56 @@ impl Camera {
             zoom: 1.0,
         }
     }
+
+    pub fn handle_input(&mut self,
+                        key_up: bool,
+                        key_down: bool,
+                        key_left: bool,
+                        key_right: bool,
+                        wheel: i32,
+                        elapsed: f64) {
+        if key_up {
+            self.move_up(CAMERA_SENSITIVITY * elapsed);
+        }
+        if key_down {
+            self.move_down(CAMERA_SENSITIVITY * elapsed);
+        }
+        if key_left {
+            self.move_left(CAMERA_SENSITIVITY * elapsed);
+        }
+        if key_right {
+            self.move_right(CAMERA_SENSITIVITY * elapsed);
+        }
+        if wheel != 0.0 {
+            self.zoom(ZOOM_SENSITIVITY * wheel * elapsed);
+        }
+
+    }
+
     pub fn resize(&mut self, width: f64, height: f64) {
         self.max_x = width;
         self.max_y = height;
         self.check();
     }
 
-    pub fn move_left(&mut self, d: f64) {
+    fn move_left(&mut self, d: f64) {
         self.pos_x -= d;
         self.check();
     }
-    pub fn move_right(&mut self, d: f64) {
+    fn move_right(&mut self, d: f64) {
         self.pos_x += d;
         self.check();
     }
-    pub fn move_up(&mut self, d: f64) {
+    fn move_up(&mut self, d: f64) {
         self.pos_y -= d;
         self.check();
     }
-    pub fn move_down(&mut self, d: f64) {
+    fn move_down(&mut self, d: f64) {
         self.pos_y += d;
         self.check();
     }
 
-    pub fn zoom(&mut self, d: f64) {
+    fn zoom(&mut self, d: f64) {
         self.zoom += d;
         if self.zoom < ZOOM_MIN {
             self.zoom = ZOOM_MIN;
