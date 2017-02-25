@@ -60,7 +60,7 @@ impl View for GameView {
                                  phi.events.now.key_down,
                                  phi.events.now.key_left,
                                  phi.events.now.key_right,
-                                 phi.events.now.mouse_wheel,
+                                 phi.events.now.mouse_wheel as f64,
                                  elapsed);
 
         // Работа с сетью тут
@@ -113,14 +113,23 @@ impl View for GameView {
         match phi.events.now.left_mouse_click {
             None => {}
             Some((x, y)) => {
-                let cursor_rect = Rectangle {
-                    x: x as f64 - OBJECT_SIZE / 2.0 * self.camera.zoom,
-                    y: y as f64 - OBJECT_SIZE / 2.0 * self.camera.zoom,
-                    w: OBJECT_SIZE * self.camera.zoom,
-                    h: OBJECT_SIZE * self.camera.zoom,
-                };
+                let cursor_rect = self.camera.translate_rect(Rectangle {
+                    x: x as f64 - OBJECT_SIZE / 2.0,
+                    y: y as f64 - OBJECT_SIZE / 2.0,
+                    w: OBJECT_SIZE,
+                    h: OBJECT_SIZE,
+                });
+                println!("{:?}", cursor_rect);
 
                 self.down_ui.clear_data();
+                let objects = self.network.objects.clone();
+                let objects = objects.lock().unwrap();
+                let select_object = objects.iter()
+                    .find(|&(_, obj)| cursor_rect.contains_point(obj.x, obj.y));
+                println!("{:?}", select_object);
+                if let Some((_, object)) = select_object {
+                    self.network.update_select_object(object.name.clone());
+                }
             }
         }
 

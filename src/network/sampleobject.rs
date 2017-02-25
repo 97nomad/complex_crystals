@@ -1,3 +1,5 @@
+use std::mem::replace;
+
 #[derive(RustcDecodable, RustcEncodable, Clone)]
 pub struct ServerInfo {
     pub name: String,
@@ -24,7 +26,7 @@ impl WorldSize {
     }
 }
 
-#[derive(RustcDecodable, RustcEncodable, Clone, PartialEq)]
+#[derive(RustcDecodable, RustcEncodable, Clone, PartialEq, Debug)]
 pub enum ObjectType {
     Asteroid,
     Builder,
@@ -63,13 +65,18 @@ pub enum ArmorType {
     Building,
 }
 
-#[derive(RustcDecodable)]
+#[derive(RustcDecodable, Debug)]
 pub struct ObjectResponse {
     pub name: String,
     pub owner: String,
     pub x: f64,
     pub y: f64,
     pub otype: ObjectType,
+}
+
+#[derive(RustcEncodable)]
+pub struct ObjectInfoRequest {
+    pub name: String,
 }
 
 #[derive(RustcDecodable, RustcEncodable, Clone)]
@@ -99,6 +106,41 @@ pub struct SampleObject {
 
     pub shell_health: f64,
     pub shell_type: ArmorType,
+}
+
+impl SampleObject {
+    pub fn new_empty() -> Self {
+        SampleObject {
+            owner: "none".to_owned(),
+            name: "none".to_owned(),
+            otype: ObjectType::Asteroid,
+            x: 0.0,
+            y: 0.0,
+
+            drive_speed: 0.0,
+            drive_dest_x: 0.0,
+            drive_dest_y: 0.0,
+
+            radar_radius: 0.0,
+            radar_type: RadarType::None,
+
+            weapon_active: false,
+            weapon_type: WeaponType::None,
+            weapon_radius: 0.0,
+            weapon_target_x: 0.0,
+            weapon_target_y: 0.0,
+
+            cargo_type: CargoType::None,
+            cargo_max: 0.0,
+            cargo_current: 0.0,
+
+            shell_health: 0.0,
+            shell_type: ArmorType::Asteroid,
+        }
+    }
+    pub fn replace_object(&mut self, new: SampleObject) {
+        replace(self, new);
+    }
 }
 
 impl ObjectType {

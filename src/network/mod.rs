@@ -7,17 +7,19 @@ use std::io::Read;
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::collections::HashMap;
+use std::mem::replace;
 
-use self::sampleobject::{SampleObject, ObjectResponse, ServerInfo, WorldSize};
+use self::sampleobject::{SampleObject, ObjectResponse, ServerInfo, WorldSize, ObjectInfoRequest};
 
-const OBJECTS_UPDATE_ARRD: &'static str = "http://localhost:3000/objects";
+const OBJECTS_UPDATE_ADDR: &'static str = "http://localhost:3000/objects";
+const OBJECTINFO_ADDR: &'static str = "http://localhost:3000/object_info";
 const SERVERINFO_UPDATE_ADDR: &'static str = "http://localhost:3000/info";
 const WORLDSIZE_UPDATE_ADDR: &'static str = "http://localhost:3000/world_size";
 const USERNAME: &'static str = "admin";
 
 pub struct Network {
-    pub df_select_object: bool,
-    pub select_object: Arc<Mutex<Option<SampleObject>>>,
+    pub df_select_object: Arc<Mutex<bool>>,
+    pub select_object: Arc<Mutex<SampleObject>>,
     pub objects: Arc<Mutex<HashMap<String, ObjectResponse>>>,
     pub server_info: Arc<Mutex<ServerInfo>>,
     pub world_size: Arc<Mutex<WorldSize>>,
@@ -26,8 +28,8 @@ pub struct Network {
 impl Network {
     pub fn new() -> Self {
         Network {
-            df_select_object: true,
-            select_object: Arc::new(Mutex::new(None)),
+            df_select_object: Arc::new(Mutex::new(true)),
+            select_object: Arc::new(Mutex::new(SampleObject::new_empty())),
             objects: Arc::new(Mutex::new(HashMap::new())),
             server_info: Arc::new(Mutex::new(ServerInfo {
                 name: "ServerName".to_owned(),
@@ -41,8 +43,18 @@ impl Network {
         }
     }
 
+    pub fn update_select_object(&mut self, name: String) {
+        let addr = Url::parse(OBJECTINFO_ADDR).unwrap();
+        let select_object = self.select_object.clone();
+        let df_select_object = self.df_select_object.clone();
+        println!("Spawning thread");
+        thread::spawn(move || {
+            NetworkRequest::select_object(name, select_object, df_select_object, addr)
+        });
+    }
+
     pub fn update_objects(&mut self) {
-        let addr = Url::parse(OBJECTS_UPDATE_ARRD).unwrap();
+        let addr = Url::parse(OBJECTS_UPDATE_ADDR).unwrap();
         let objects = self.objects.clone();
         thread::spawn(move || NetworkRequest::update_objects(objects, addr));
     }
@@ -61,7 +73,7 @@ impl Network {
 struct NetworkRequest {}
 
 impl NetworkRequest {
-    fn request(addr: Url) -> String {
+    fn request(addr: Url, payload: Option<String>) -> String {
         let client = Client::new();
 
         let mut headers = Headers::new();
@@ -70,7 +82,8 @@ impl NetworkRequest {
             password: None,
         }));
 
-        let mut response = match client.get(addr).headers(headers).send() {
+        let payload = payload.unwrap_or("".to_owned());
+        let mut response = match client.get(addr).headers(headers).body(&payload).send() {
             Ok(data) => data,
             Err(_) => panic!("Сервер не ответил на запрос"),
         };
@@ -79,8 +92,24 @@ impl NetworkRequest {
         result_string
     }
 
+    fn select_object(name: String,
+                     object: Arc<Mutex<SampleObject>>,
+                     df: Arc<Mutex<bool>>,
+                     addr: Url) {
+        println!("{:?}",
+                 json::encode(&ObjectInfoRequest { name: name.clone() }).unwrap());
+        let data = NetworkRequest::request(addr,
+                                           Some(json::encode(&ObjectInfoRequest { name: name })
+                                               .unwrap()));
+        let new_object: SampleObject = json::decode(&data).unwrap();
+        let mut object = object.lock().unwrap();
+        object.replace_object(new_object);
+        *df.lock().unwrap() = false;
+        println!("Object selected");
+    }
+
     fn update_objects(objects: Arc<Mutex<HashMap<String, ObjectResponse>>>, addr: Url) {
-        let data = NetworkRequest::request(addr);
+        let data = NetworkRequest::request(addr, None);
 
         let mut parsed_objects: Vec<ObjectResponse> = match json::decode(&data) {
             Err(e) => {
@@ -97,7 +126,7 @@ impl NetworkRequest {
     }
 
     fn update_server_info(server_info: Arc<Mutex<ServerInfo>>, addr: Url) {
-        let data = NetworkRequest::request(addr);
+        let data = NetworkRequest::request(addr, None);
         let parsed_info: ServerInfo = match json::decode(&data) {
             Err(e) => {
                 println!("Json parsing error: {:?}", e);
@@ -114,7 +143,7 @@ impl NetworkRequest {
     }
 
     fn update_world_size(world_size: Arc<Mutex<WorldSize>>, addr: Url) {
-        let data = NetworkRequest::request(addr);
+        let data = NetworkRequest::request(addr, None);
         let parsed_info: WorldSize = match json::decode(&data) {
             Err(e) => {
                 println!("Json parsing error: {:?}", e);

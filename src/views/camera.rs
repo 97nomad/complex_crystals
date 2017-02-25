@@ -34,7 +34,7 @@ impl Camera {
                         key_down: bool,
                         key_left: bool,
                         key_right: bool,
-                        wheel: i32,
+                        wheel: f64,
                         elapsed: f64) {
         if key_up {
             self.move_up(CAMERA_SENSITIVITY * elapsed);

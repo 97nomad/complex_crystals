@@ -123,7 +123,7 @@ pub fn spawn<F>(title: &str, init: F)
         fps += 1;
 
         if now - last_second > 1_000 {
-            println!("FPS: {}", fps);
+            // println!("FPS: {}", fps);
             context.fps = fps;
             last_second = now;
             fps = 0;
