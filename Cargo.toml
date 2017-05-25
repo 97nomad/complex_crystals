@@ -4,9 +4,14 @@ version = "0.1.0"
 authors = ["97nomad <97nomad@gmail.com>"]
 
 [dependencies]
-sdl2 = "*"
-sdl2_image = "*"
-sdl2_ttf = "*"
+piston = "*"
+piston_window = "*"
+piston2d-graphics = "*"
+pistoncore-glutin_window = "*"
+piston2d-opengl_graphics = "*"
+find_folder = "*"
+conrod = { version = "*", features = ["piston"] }
+
 rand = "*"
 rustc-serialize = "*"
 

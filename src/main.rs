@@ -1,15 +1,20 @@
-extern crate sdl2;
-extern crate sdl2_image;
-extern crate sdl2_ttf;
+extern crate piston;
+extern crate graphics;
+extern crate piston_window;
+extern crate opengl_graphics;
+
+// #[cfg(feature="piston")]
+#[macro_use]
+extern crate conrod;
+
 extern crate rand;
 extern crate rustc_serialize;
 extern crate hyper;
 
-mod views;
-mod phi;
-mod network;
+// mod network;
+mod engine;
+pub mod scenes;
 
 fn main() {
-    ::phi::spawn("Complex Crystal Client",
-                 |phi| Box::new(::views::main_menu::MainMenuView::new(phi)));
+    ::engine::spawn();
 }
