@@ -10,7 +10,7 @@ extern crate rand;
 extern crate rustc_serialize;
 extern crate hyper;
 
-// mod network;
+mod network;
 mod engine;
 pub mod scenes;
 

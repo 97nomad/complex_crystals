@@ -11,13 +11,14 @@ use std::mem::replace;
 
 use self::sampleobject::{SampleObject, ObjectResponse, ServerInfo, WorldSize, ObjectInfoRequest};
 
-const OBJECTS_UPDATE_ADDR: &'static str = "http://localhost:3000/objects";
-const OBJECTINFO_ADDR: &'static str = "http://localhost:3000/object_info";
-const SERVERINFO_UPDATE_ADDR: &'static str = "http://localhost:3000/info";
-const WORLDSIZE_UPDATE_ADDR: &'static str = "http://localhost:3000/world_size";
+const OBJECTS_UPDATE_ADDR: &'static str = "/objects";
+const OBJECTINFO_ADDR: &'static str = "/object_info";
+const SERVERINFO_UPDATE_ADDR: &'static str = "/info";
+const WORLDSIZE_UPDATE_ADDR: &'static str = "/world_size";
 const USERNAME: &'static str = "admin";
 
 pub struct Network {
+    pub addr: String,
     pub df_select_object: Arc<Mutex<bool>>,
     pub select_object: Arc<Mutex<SampleObject>>,
     pub objects: Arc<Mutex<HashMap<String, ObjectResponse>>>,
@@ -26,8 +27,9 @@ pub struct Network {
 }
 
 impl Network {
-    pub fn new() -> Self {
+    pub fn new(addr: String) -> Self {
         Network {
+            addr: addr,
             df_select_object: Arc::new(Mutex::new(true)),
             select_object: Arc::new(Mutex::new(SampleObject::new_empty())),
             objects: Arc::new(Mutex::new(HashMap::new())),
@@ -44,7 +46,7 @@ impl Network {
     }
 
     pub fn update_select_object(&mut self, name: String) {
-        let addr = Url::parse(OBJECTINFO_ADDR).unwrap();
+        let addr = Url::parse(&format!("http://{}{}", self.addr, OBJECTINFO_ADDR)).unwrap();
         let select_object = self.select_object.clone();
         let df_select_object = self.df_select_object.clone();
         println!("Spawning thread");
@@ -54,17 +56,17 @@ impl Network {
     }
 
     pub fn update_objects(&mut self) {
-        let addr = Url::parse(OBJECTS_UPDATE_ADDR).unwrap();
+        let addr = Url::parse(&format!("http://{}{}", self.addr, OBJECTS_UPDATE_ADDR)).unwrap();
         let objects = self.objects.clone();
         thread::spawn(move || NetworkRequest::update_objects(objects, addr));
     }
     pub fn update_info(&mut self) {
-        let addr = Url::parse(SERVERINFO_UPDATE_ADDR).unwrap();
+        let addr = Url::parse(&format!("http://{}{}", self.addr, SERVERINFO_UPDATE_ADDR)).unwrap();
         let server_info = self.server_info.clone();
         thread::spawn(move || NetworkRequest::update_server_info(server_info, addr));
     }
     pub fn update_world_size(&mut self) {
-        let addr = Url::parse(WORLDSIZE_UPDATE_ADDR).unwrap();
+        let addr = Url::parse(&format!("http://{}{}", self.addr, WORLDSIZE_UPDATE_ADDR)).unwrap();
         let world_size = self.world_size.clone();
         thread::spawn(move || NetworkRequest::update_world_size(world_size, addr));
     }
