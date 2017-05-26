@@ -8,6 +8,7 @@ pub struct Engine {
     pub window: PistonWindow,
     pub scene: Box<Scene>,
     pub events: Events,
+    pub is_alive: bool,
 }
 
 impl Engine {
@@ -16,6 +17,7 @@ impl Engine {
             window: window,
             scene: scene,
             events: Events::new(EventSettings::new()),
+            is_alive: true,
         }
     }
 
@@ -26,9 +28,12 @@ impl Engine {
     pub fn update(&mut self, args: &UpdateArgs) {
         match self.scene.update(args) {
             SceneAction::None => {}
-            SceneAction::Quit => {}
             SceneAction::ChangeScene(scene) => self.scene = scene,
         }
+    }
+
+    pub fn event(&mut self, event: Input) {
+        self.scene.event(event);
     }
 
     pub fn start_loop(&mut self) {
@@ -36,7 +41,7 @@ impl Engine {
             match event {
                 Input::Render(args) => self.render(args),
                 Input::Update(args) => self.update(&args),
-                _ => {}
+                _ => self.event(event),
             }
         }
     }
@@ -44,13 +49,13 @@ impl Engine {
 
 pub enum SceneAction {
     None,
-    Quit,
     ChangeScene(Box<Scene>),
 }
 
 pub trait Scene {
     fn render(&mut self, window: &mut PistonWindow, args: RenderArgs);
     fn update(&mut self, args: &UpdateArgs) -> SceneAction;
+    fn event(&mut self, event: Input);
 }
 
 pub fn spawn() {

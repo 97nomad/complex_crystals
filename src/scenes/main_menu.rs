@@ -2,7 +2,7 @@ extern crate find_folder;
 
 use ::piston::input::*;
 use ::piston_window::{G2d, G2dTexture, TextureSettings, PistonWindow};
-use ::piston_window::Window;
+use ::piston_window::{Window, Size};
 use ::piston_window::texture::UpdateTexture;
 use ::conrod;
 use ::conrod::Ui;
@@ -14,6 +14,7 @@ widget_ids! {
         canvas,
         background_image,
         title_text, 
+        addr_text_box,
     }
 }
 
@@ -23,6 +24,9 @@ pub struct MainMenuScene {
     image_map: conrod::image::Map<G2dTexture>,
     glyph_cache: conrod::text::GlyphCache,
     text_texture_cache: G2dTexture,
+    size: Size,
+
+    addr_tb: String,
 }
 
 impl MainMenuScene {
@@ -87,6 +91,9 @@ impl MainMenuScene {
             image_map: image_map,
             glyph_cache: glyph_cache,
             text_texture_cache: text_texture_cache,
+            size: size,
+
+            addr_tb: String::new(),
         }
     }
 }
@@ -119,7 +126,26 @@ impl Scene for MainMenuScene {
             .mid_top_of(self.ids.canvas)
             .set(self.ids.title_text, &mut ui);
 
+        for ev in widget::TextBox::new(&self.addr_tb)
+            .center_justify()
+            .mid_bottom_with_margin_on(self.ids.title_text, 20.0)
+            .set(self.ids.addr_text_box, &mut ui) {
+            use conrod::widget::text_box::Event;
+            match ev {
+                Event::Update(s) => self.addr_tb = s,
+                Event::Enter => {}
+            }
+        }
+
         SceneAction::None
+    }
+
+    fn event(&mut self, event: Input) {
+        if let Some(ev) = conrod::backend::piston::event::convert(event.clone(),
+                                                                  self.size.width as f64,
+                                                                  self.size.height as f64) {
+            self.ui.handle_event(ev);
+        }
     }
 }
 
