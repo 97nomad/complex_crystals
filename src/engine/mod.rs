@@ -1,8 +1,6 @@
-use ::piston_window::WindowSettings;
+use ::piston_window::{PistonWindow, WindowSettings, OpenGL};
 use ::piston::event_loop::*;
 use ::piston::input::*;
-use ::piston_window::PistonWindow;
-use ::piston_window::OpenGL;
 
 use ::scenes::main_menu::MainMenuScene;
 

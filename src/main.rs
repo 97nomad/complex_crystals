@@ -1,7 +1,6 @@
 extern crate piston;
 extern crate graphics;
 extern crate piston_window;
-extern crate opengl_graphics;
 
 // #[cfg(feature="piston")]
 #[macro_use]
