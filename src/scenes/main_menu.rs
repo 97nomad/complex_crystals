@@ -36,7 +36,7 @@ impl MainMenuScene {
 
         let mut ui = conrod::UiBuilder::new([size.width as f64, size.height as f64])
             .theme(conrod::Theme {
-                name: "Demo Theme".to_string(),
+                name: "Main Menu Theme".to_string(),
                 padding: Padding::none(),
                 x_position: Position::Relative(Relative::Align(Align::Start), None),
                 y_position: Position::Relative(Relative::Direction(Direction::Backwards, 20.0),
@@ -133,7 +133,7 @@ impl Scene for MainMenuScene {
             use conrod::widget::text_box::Event;
             match ev {
                 Event::Update(s) => self.addr_tb = s,
-                Event::Enter => {}
+                Event::Enter => return SceneAction::ToGameScene(self.addr_tb.clone()),
             }
         }
 
