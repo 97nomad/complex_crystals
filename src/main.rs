@@ -13,6 +13,7 @@ extern crate hyper;
 mod network;
 mod engine;
 pub mod scenes;
+mod utils;
 
 fn main() {
     ::engine::spawn();
