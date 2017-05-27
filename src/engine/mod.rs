@@ -29,7 +29,11 @@ impl Engine {
         match self.scene.update(args) {
             SceneAction::None => {}
             SceneAction::ToGameScene(addr) => {
-                self.scene = Box::new(GameScene::new(&mut self.window, addr))
+                self.scene = if let Some(scene) = GameScene::new(&mut self.window, addr) {
+                    Box::new(scene)
+                } else {
+                    Box::new(MainMenuScene::new(&mut self.window))
+                }
             }
         }
     }

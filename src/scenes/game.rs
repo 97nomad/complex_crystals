@@ -18,14 +18,23 @@ pub struct GameScene {
 }
 
 impl GameScene {
-    pub fn new(window: &mut PistonWindow, addr: String) -> Self {
+    pub fn new(window: &mut PistonWindow, addr: String) -> Option<Self> {
         println!("Connecting to {}", addr);
+
+        let network = Network::new(addr);
         let draw_size = window.draw_size();
-        GameScene {
-            network: Network::new(addr),
-            network_timer: 0.0,
-            camera: Camera::new((draw_size.width as f64, draw_size.height as f64),
-                                (1000.0, 1000.0)),
+
+        if let Ok(info) = network.check_connection().join() {
+            println!("Server name: {}\nServer status: {}\nTPS: {}", info.name, info.status, info.tps);
+            Some(GameScene {
+                network,
+                network_timer: 0.0,
+                camera: Camera::new((draw_size.width as f64, draw_size.height as f64),
+                                    (1000.0, 1000.0)),
+            })
+        } else {
+            println!("Can't connect to server");
+            None
         }
     }
 }

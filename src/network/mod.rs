@@ -6,6 +6,7 @@ use hyper::header::{Authorization, Basic, Headers};
 use std::io::Read;
 use std::sync::{Arc, Mutex};
 use std::thread;
+use std::thread::JoinHandle;
 use std::collections::HashMap;
 use std::mem::replace;
 
@@ -43,6 +44,11 @@ impl Network {
                 height: 0.0,
             })),
         }
+    }
+
+    pub fn check_connection(&self) -> JoinHandle<ServerInfo> {
+        let addr = Url::parse(&format!("http://{}{}", self.addr, SERVERINFO_UPDATE_ADDR)).unwrap();
+        thread::spawn(move || NetworkRequest::check_server_info(addr))
     }
 
     pub fn update_select_object(&mut self, name: String) {
@@ -87,7 +93,7 @@ impl NetworkRequest {
         let payload = payload.unwrap_or("".to_owned());
         let mut response = match client.get(addr).headers(headers).body(&payload).send() {
             Ok(data) => data,
-            Err(_) => panic!("Сервер не ответил на запрос"),
+            Err(_) => panic!("Server not responding"),
         };
         let mut result_string = String::new();
         response.read_to_string(&mut result_string).unwrap();
@@ -142,6 +148,14 @@ impl NetworkRequest {
         };
         let mut serverinfo = server_info.lock().unwrap();
         serverinfo.replace(parsed_info);
+    }
+
+    fn check_server_info(addr: Url) -> ServerInfo {
+        let data = NetworkRequest::request(addr, None);
+        match json::decode(&data) {
+            Err(e) => panic!("Server not found"),
+            Ok(data) => data,
+        }
     }
 
     fn update_world_size(world_size: Arc<Mutex<WorldSize>>, addr: Url) {
