@@ -29,6 +29,11 @@ impl Camera {
         input[3]]
     }
 
+    pub fn transform_cursor(&self, input: [f64; 2]) -> [f64; 2] {
+        [input[0] + self.position.0,
+        input[1] + self.position.1]
+    }
+
     pub fn shift(&mut self, dir: Direction, dt: f64) {
         match dir {
             Direction::Left => self.position.0 -= dt * self.speed,

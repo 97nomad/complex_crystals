@@ -65,7 +65,7 @@ pub enum ArmorType {
     Building,
 }
 
-#[derive(RustcDecodable, Debug)]
+#[derive(RustcDecodable, Clone, Debug)]
 pub struct ObjectResponse {
     pub name: String,
     pub owner: String,
