@@ -8,7 +8,7 @@ use conrod::{Ui, Colorable};
 use ui as UI;
 
 use network::Network;
-use network::sampleobject::ObjectResponse;
+use network::sampleobject::{ObjectResponse, ObjectType};
 use utils::camera::{Camera, Direction};
 
 const NETWORK_UPDATE_TIMER: f64 = 1.0;
@@ -83,18 +83,20 @@ impl Scene for GameScene {
 
             // draw objects
             for (_, obj) in self.network.objects.lock().unwrap().iter() {
-                Rectangle::new([1.0, 0.0, 0.0, 1.0]).draw(self.camera
-                                                              .transform([obj.x -
-                                                                          (SPRITE_SIZE /
-                                                                           2.0),
-                                                                          obj.y -
-                                                                          (SPRITE_SIZE /
-                                                                           2.0),
-                                                                          SPRITE_SIZE,
-                                                                          SPRITE_SIZE]),
-                                                          &context.draw_state,
-                                                          context.transform,
-                                                          graphics);
+                let rectangle = match obj.otype {
+                    ObjectType::Asteroid => Rectangle::new([0.2, 0.2, 0.2, 1.0]),
+                    ObjectType::Builder => Rectangle::new([0.2, 0.8, 0.2, 1.0]),
+                    ObjectType::Harvester => Rectangle::new([0.2, 0.2, 0.8, 1.0]),
+                    ObjectType::Battlecruiser => Rectangle::new([0.8, 0.2, 0.2, 1.0]),
+                };
+                rectangle.draw(self.camera
+                                   .transform([obj.x - (SPRITE_SIZE / 2.0),
+                                               obj.y - (SPRITE_SIZE / 2.0),
+                                               SPRITE_SIZE,
+                                               SPRITE_SIZE]),
+                               &context.draw_state,
+                               context.transform,
+                               graphics);
             }
 
             // draw UI
@@ -147,12 +149,15 @@ impl Scene for GameScene {
                     objects
                         .iter()
                         .find(|&(_, obj)| {
-                                  intersect([self.cursor_pos[0] - SPRITE_SIZE / 2.0,
-                                             self.cursor_pos[1] - SPRITE_SIZE / 2.0,
-                                             self.cursor_pos[0] + SPRITE_SIZE / 2.0,
-                                             self.cursor_pos[1] + SPRITE_SIZE / 2.0],
-                                            [obj.x, obj.y])
-                              }) {
+                            intersect(self.camera
+                                          .transform_reverse([self.cursor_pos[0] -
+                                                              SPRITE_SIZE / 2.0,
+                                                              self.cursor_pos[1] -
+                                                              SPRITE_SIZE / 2.0,
+                                                              SPRITE_SIZE,
+                                                              SPRITE_SIZE]),
+                                      [obj.x, obj.y])
+                        }) {
                     self.selected_object = Some(object.clone());
                     println!("select: {}", object.name);
                 }
@@ -173,5 +178,6 @@ impl Scene for GameScene {
 }
 
 fn intersect(rect: [f64; 4], point: [f64; 2]) -> bool {
-    point[0] >= rect[0] && point[0] <= rect[2] && point[1] >= rect[1] && point[1] <= rect[3]
+    point[0] >= rect[0] && point[0] <= rect[0] + rect[2] && point[1] >= rect[1] &&
+    point[1] <= rect[1] + rect[3]
 }
