@@ -134,6 +134,19 @@ impl Scene for GameScene {
             .align_middle_x_of(self.ids.canvas)
             .set(self.ids.text, &mut ui);
 
+        if let Some(ref object) = self.selected_object {
+            widget::Text::new(&format!("name: {}\nowner: {}\ntype: {:?}\npos_x: {}\npos_y: {}",
+                                      object.name,
+                                      object.owner,
+                                      object.otype,
+                                      object.x,
+                                      object.y))
+                    .rgba(0.0, 0.0, 0.0, 1.0)
+                    .align_bottom_of(self.ids.canvas)
+                    .align_left_of(self.ids.canvas)
+                    .set(self.ids.selected_object_text, &mut ui);
+        }
+
         SceneAction::None
     }
     fn event(&mut self, event: Input) {
@@ -159,7 +172,6 @@ impl Scene for GameScene {
                                       [obj.x, obj.y])
                         }) {
                     self.selected_object = Some(object.clone());
-                    println!("select: {}", object.name);
                 }
             }
             Input::Move(Motion::MouseCursor(x, y)) => self.cursor_pos = [x, y],
