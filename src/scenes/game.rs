@@ -8,7 +8,7 @@ use conrod::{Ui, Colorable};
 use ui as UI;
 
 use network::Network;
-use network::sampleobject::{ObjectResponse, ObjectType};
+use data_types::{ObjectResponse, ObjectType};
 use utils::camera::{Camera, Direction};
 
 const NETWORK_UPDATE_TIMER: f64 = 1.0;

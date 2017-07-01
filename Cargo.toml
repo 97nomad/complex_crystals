@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["97nomad <97nomad@gmail.com>"]
 
 [dependencies]
+time = "*"
 piston = "*"
 piston_window = "*"
 piston2d-graphics = "*"

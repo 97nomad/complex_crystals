@@ -1,5 +1,3 @@
-pub mod sampleobject;
-
 use rustc_serialize::json;
 use hyper::{Client, Url};
 use hyper::header::{Authorization, Basic, Headers};
@@ -10,7 +8,7 @@ use std::thread::JoinHandle;
 use std::collections::HashMap;
 use std::mem::replace;
 
-use self::sampleobject::{SampleObject, ObjectResponse, ServerInfo, WorldSize, ObjectInfoRequest};
+use data_types::{SampleObject, ObjectResponse, ServerInfo, WorldSize, ObjectInfoRequest};
 
 const OBJECTS_UPDATE_ADDR: &'static str = "/objects";
 const OBJECTINFO_ADDR: &'static str = "/object_info";
@@ -35,14 +33,14 @@ impl Network {
             select_object: Arc::new(Mutex::new(SampleObject::new_empty())),
             objects: Arc::new(Mutex::new(HashMap::new())),
             server_info: Arc::new(Mutex::new(ServerInfo {
-                name: "ServerName".to_owned(),
-                status: "SomeStatus".to_owned(),
-                tps: 0,
-            })),
+                                                 name: "ServerName".to_owned(),
+                                                 status: "SomeStatus".to_owned(),
+                                                 tps: 0,
+                                             })),
             world_size: Arc::new(Mutex::new(WorldSize {
-                width: 0.0,
-                height: 0.0,
-            })),
+                                                width: 0.0,
+                                                height: 0.0,
+                                            })),
         }
     }
 
@@ -57,8 +55,8 @@ impl Network {
         let df_select_object = self.df_select_object.clone();
         println!("Spawning thread");
         thread::spawn(move || {
-            NetworkRequest::select_object(name, select_object, df_select_object, addr)
-        });
+                          NetworkRequest::select_object(name, select_object, df_select_object, addr)
+                      });
     }
 
     pub fn update_objects(&mut self) {
@@ -86,9 +84,9 @@ impl NetworkRequest {
 
         let mut headers = Headers::new();
         headers.set(Authorization(Basic {
-            username: USERNAME.to_owned(),
-            password: None,
-        }));
+                                      username: USERNAME.to_owned(),
+                                      password: None,
+                                  }));
 
         let payload = payload.unwrap_or("".to_owned());
         let mut response = match client.get(addr).headers(headers).body(&payload).send() {
@@ -108,7 +106,7 @@ impl NetworkRequest {
                  json::encode(&ObjectInfoRequest { name: name.clone() }).unwrap());
         let data = NetworkRequest::request(addr,
                                            Some(json::encode(&ObjectInfoRequest { name: name })
-                                               .unwrap()));
+                                                    .unwrap()));
         let new_object: SampleObject = json::decode(&data).unwrap();
         let mut object = object.lock().unwrap();
         object.replace_object(new_object);
