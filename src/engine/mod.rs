@@ -1,9 +1,9 @@
-use ::piston_window::{PistonWindow, WindowSettings, OpenGL};
-use ::piston::event_loop::*;
-use ::piston::input::*;
+use piston_window::{PistonWindow, WindowSettings, OpenGL};
+use piston::event_loop::*;
+use piston::input::*;
 
-use ::scenes::main_menu::MainMenuScene;
-use ::scenes::game::GameScene;
+use scenes::main_menu::MainMenuScene;
+use scenes::game::GameScene;
 
 pub struct Engine {
     pub window: PistonWindow,
@@ -28,12 +28,15 @@ impl Engine {
     pub fn update(&mut self, args: &UpdateArgs) {
         match self.scene.update(args) {
             SceneAction::None => {}
-            SceneAction::ToGameScene(addr) => {
+            SceneAction::ConnectToServer(addr) => {
                 self.scene = if let Some(scene) = GameScene::new(&mut self.window, addr) {
                     Box::new(scene)
                 } else {
                     Box::new(MainMenuScene::new(&mut self.window))
                 }
+            }
+            SceneAction::StartServer(opt) => {
+                self.scene = Box::new(MainMenuScene::new(&mut self.window))
             }
         }
     }
@@ -55,7 +58,8 @@ impl Engine {
 
 pub enum SceneAction {
     None,
-    ToGameScene(String),
+    ConnectToServer(String),
+    StartServer((isize, isize, isize)),
 }
 
 pub trait Scene {
