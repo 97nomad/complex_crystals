@@ -1,6 +1,8 @@
 pub mod server_client;
+pub mod server_manager;
 
 pub use self::server_client::ServerClient;
+pub use self::server_manager::ServerManager;
 
 use std::collections::HashMap;
 use data_types::{SampleObject, ObjectResponse, ServerInfo, WorldSize, ObjectInfoRequest};

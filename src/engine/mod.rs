@@ -4,7 +4,7 @@ use piston::input::*;
 
 use scenes::main_menu::MainMenuScene;
 use scenes::game::GameScene;
-use network::ServerClient;
+use network::{ServerClient, ServerManager};
 
 pub struct Engine {
     pub window: PistonWindow,
@@ -38,7 +38,13 @@ impl Engine {
                 }
             }
             SceneAction::StartServer(opt) => {
-                self.scene = Box::new(MainMenuScene::new(&mut self.window))
+                self.scene = if let Some(scene) =
+                    GameScene::new(&mut self.window,
+                                   Box::new(ServerManager::new(1000.0, 1000.0, Vec::new()))) {
+                    Box::new(scene)
+                } else {
+                    Box::new(MainMenuScene::new(&mut self.window))
+                }
             }
         }
     }

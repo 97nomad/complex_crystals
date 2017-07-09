@@ -1,0 +1,20 @@
+{
+    "owner": "",
+    "name": "Harvester",
+    "otype": "Harvester",
+    "x": 0.0,
+    "y": 0.0,
+    "drive_speed": 0.001,
+    "drive_dest_x": 0.0,
+    "drive_dest_y": 0.0,
+    "radar_radius": 10.0,
+    "radar_type": "Middle",
+    "weapon_active": false,
+    "weapon_type": "Mining",
+    "weapon_radius": 10.0,
+    "cargo_type": "Mining",
+    "cargo_max": 100.0,
+    "cargo_current": 0.0,
+    "shell_health": 100.0,
+    "shell_type": "Light"
+}

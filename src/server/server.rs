@@ -2,13 +2,7 @@ use data_types::*;
 use server::events::*;
 use server::config::GameConfig;
 use std::collections::{HashMap, VecDeque};
-
-#[derive(RustcDecodable, RustcEncodable, Clone)]
-pub struct ServerInfo {
-    name: String,
-    status: String,
-    tps: u16,
-}
+use data_types::{ServerInfo, ObjectResponse};
 
 pub struct GameEngine {
     pub info: ServerInfo,
@@ -35,8 +29,29 @@ impl GameEngine {
             config: config,
         }
     }
+
+    pub fn get_server_info(&self) -> ServerInfo {
+        self.info.clone()
+    }
+
     pub fn update_tps(&mut self, tps: u16) {
         self.info.tps = tps;
+    }
+
+    pub fn get_objects(&self) -> HashMap<String, ObjectResponse> {
+        self.objects
+            .iter()
+            .map(|(k, v)| {
+                (k.clone(),
+                 ObjectResponse {
+                     name: k.clone(),
+                     owner: v.owner.clone(),
+                     x: v.x,
+                     y: v.y,
+                     otype: v.otype.clone(),
+                 })
+            })
+            .collect()
     }
 
     pub fn add_object(&mut self,

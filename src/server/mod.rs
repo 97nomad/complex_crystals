@@ -2,6 +2,8 @@ pub mod config;
 pub mod events;
 pub mod server;
 
+pub use server::server::GameEngine;
+
 use level_generator;
 
 use std::sync::{Arc, Mutex};
