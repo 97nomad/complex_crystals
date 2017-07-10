@@ -11,6 +11,7 @@ pub struct ServerManager {
     tps_timer: f64,
 
     tps: u16,
+    selected_object: Option<String>,
     engine: Arc<Mutex<GameEngine>>,
 }
 
@@ -24,6 +25,7 @@ impl ServerManager {
             engine_timer: 0.0,
             tps_timer: 0.0,
             tps: 0,
+            selected_object: None,
             engine: engine,
         }
     }
@@ -55,9 +57,19 @@ impl ServerConnection for ServerManager {
     fn get_objects(&self) -> HashMap<String, ObjectResponse> {
         self.engine.lock().unwrap().get_objects()
     }
-    fn select_object(&mut self, name: String) {}
+    fn select_object(&mut self, name: String) {
+        self.selected_object = Some(name);
+    }
     fn get_selected_object(&self) -> Option<SampleObject> {
-        None
+        if let Some(ref name) = self.selected_object {
+            if let Some(obj) = self.engine.lock().unwrap().get_object(&name, None) {
+                Some(obj.clone())
+            } else {
+                None
+            }
+        } else {
+            None
+        }
     }
     fn get_server_info(&self) -> ServerInfo {
         ServerInfo {

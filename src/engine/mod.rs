@@ -40,7 +40,13 @@ impl Engine {
             SceneAction::StartServer(opt) => {
                 self.scene = if let Some(scene) =
                     GameScene::new(&mut self.window,
-                                   Box::new(ServerManager::new(1000.0, 1000.0, Vec::new()))) {
+                                   Box::new(ServerManager::new(opt.0 as f64,
+                                                               opt.1 as f64,
+                                                               (0..opt.2)
+                                                                   .map(|x| {
+                                                                            format!("Player{}", x)
+                                                                        })
+                                                                   .collect()))) {
                     Box::new(scene)
                 } else {
                     Box::new(MainMenuScene::new(&mut self.window))
