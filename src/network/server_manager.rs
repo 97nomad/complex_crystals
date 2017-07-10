@@ -5,7 +5,7 @@ use std::thread::spawn;
 use network::ServerConnection;
 use server::GameEngine;
 use server::network;
-use data_types::{SampleObject, ObjectResponse, ServerInfo, WorldSize, ObjectInfoRequest};
+use data_types::{SampleObject, ObjectResponse, ServerInfo};
 use level_generator::generate;
 
 pub struct ServerManager {
@@ -19,7 +19,7 @@ pub struct ServerManager {
 
 impl ServerManager {
     pub fn new(width: f64, height: f64, players: Vec<String>) -> Self {
-        let mut engine = Arc::new(Mutex::new(GameEngine::new(width, height)));
+        let engine = Arc::new(Mutex::new(GameEngine::new(width, height)));
 
         generate(engine.clone(), width, height, players);
         let cloned_engine = engine.clone();

@@ -6,14 +6,13 @@ use std::io::Read;
 use std::thread;
 use std::thread::JoinHandle;
 use rustc_serialize::json;
-use data_types::{SampleObject, ObjectResponse, ServerInfo, WorldSize, ObjectInfoRequest};
+use data_types::{SampleObject, ObjectResponse, ServerInfo, ObjectInfoRequest};
 
 use network::ServerConnection;
 
 const OBJECTS_UPDATE_ADDR: &'static str = "/objects";
 const OBJECTINFO_ADDR: &'static str = "/object_info";
 const SERVERINFO_UPDATE_ADDR: &'static str = "/info";
-const WORLDSIZE_UPDATE_ADDR: &'static str = "/world_size";
 const USERNAME: &'static str = "admin";
 
 pub struct ServerClient {
@@ -171,7 +170,7 @@ impl NetworkRequest {
     fn update_objects(df: Arc<Mutex<bool>>, addr: Url) -> HashMap<String, ObjectResponse> {
         let data = NetworkRequest::request(addr, None);
 
-        let mut parsed_objects: Vec<ObjectResponse> = match json::decode(&data) {
+        let parsed_objects: Vec<ObjectResponse> = match json::decode(&data) {
             Err(e) => {
                 println!("Json parsing error: {:?}", e);
                 vec![]
@@ -206,24 +205,8 @@ impl NetworkRequest {
     fn check_server_info(addr: Url) -> ServerInfo {
         let data = NetworkRequest::request(addr, None);
         match json::decode(&data) {
-            Err(e) => panic!("Server not found"),
+            Err(_) => panic!("Server not found"),
             Ok(data) => data,
         }
-    }
-
-    fn update_world_size(df: Arc<Mutex<bool>>, addr: Url) -> WorldSize {
-        let data = NetworkRequest::request(addr, None);
-        let parsed_info: WorldSize = match json::decode(&data) {
-            Err(e) => {
-                println!("Json parsing error: {:?}", e);
-                WorldSize {
-                    width: 0.0,
-                    height: 0.0,
-                }
-            }
-            Ok(data) => data,
-        };
-        *df.lock().unwrap() = true;
-        parsed_info
     }
 }

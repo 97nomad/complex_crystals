@@ -5,7 +5,7 @@ pub use self::server_client::ServerClient;
 pub use self::server_manager::ServerManager;
 
 use std::collections::HashMap;
-use data_types::{SampleObject, ObjectResponse, ServerInfo, WorldSize, ObjectInfoRequest};
+use data_types::{SampleObject, ObjectResponse, ServerInfo};
 
 pub trait ServerConnection {
     fn update(&mut self, elapsed: f64);

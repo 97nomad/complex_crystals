@@ -11,7 +11,6 @@ use network::ServerConnection;
 use data_types::{ObjectResponse, ObjectType};
 use utils::camera::{Camera, Direction};
 
-const NETWORK_UPDATE_TIMER: f64 = 1.0;
 const SPRITE_SIZE: f64 = 10.0;
 
 widget_ids! {
