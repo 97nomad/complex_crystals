@@ -72,7 +72,7 @@ pub enum ArmorType {
     Building,
 }
 
-#[derive(RustcDecodable, Clone, Debug)]
+#[derive(RustcDecodable, RustcEncodable, Clone, Debug)]
 pub struct ObjectResponse {
     pub name: String,
     pub owner: String,
@@ -342,4 +342,36 @@ fn read_file(path: &str) -> String {
     let mut string = String::new();
     file.read_to_string(&mut string).unwrap();
     string
+}
+
+#[derive(RustcEncodable)]
+pub struct WorldSizeResponse {
+    pub width: f64,
+    pub height: f64,
+}
+
+#[derive(RustcDecodable, RustcEncodable)]
+pub struct MoveObjectRequest {
+    pub name: String,
+    pub x: f64,
+    pub y: f64,
+}
+
+#[derive(RustcDecodable)]
+pub struct NameResponse {
+    pub name: String,
+}
+
+#[derive(RustcDecodable)]
+pub struct WeaponFireRequest {
+    pub name: String,
+    pub x: f64,
+    pub y: f64,
+}
+
+#[derive(RustcDecodable)]
+pub struct BuildRequest {
+    pub name: String,
+    pub oname: String,
+    pub otype: ObjectType,
 }

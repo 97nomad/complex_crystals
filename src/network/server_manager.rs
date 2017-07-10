@@ -1,8 +1,10 @@
 use std::sync::{Arc, Mutex};
 use std::collections::HashMap;
+use std::thread::spawn;
 
 use network::ServerConnection;
 use server::GameEngine;
+use server::network;
 use data_types::{SampleObject, ObjectResponse, ServerInfo, WorldSize, ObjectInfoRequest};
 use level_generator::generate;
 
@@ -20,6 +22,8 @@ impl ServerManager {
         let mut engine = Arc::new(Mutex::new(GameEngine::new(width, height)));
 
         generate(engine.clone(), width, height, players);
+        let cloned_engine = engine.clone();
+        spawn(move || network::start(cloned_engine));
 
         ServerManager {
             engine_timer: 0.0,

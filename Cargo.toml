@@ -12,6 +12,7 @@ pistoncore-glutin_window = "*"
 piston2d-opengl_graphics = "*"
 find_folder = "*"
 conrod = { version = "*", features = ["piston"] }
+iron = "*"
 
 rand = "*"
 rustc-serialize = "*"

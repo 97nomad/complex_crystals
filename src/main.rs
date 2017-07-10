@@ -3,6 +3,7 @@ extern crate graphics;
 extern crate piston_window;
 extern crate find_folder;
 extern crate time;
+extern crate iron;
 
 // #[cfg(feature="piston")]
 #[macro_use]
