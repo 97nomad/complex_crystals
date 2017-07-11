@@ -1,9 +1,10 @@
-use ::piston_window::{PistonWindow, WindowSettings, OpenGL};
-use ::piston::event_loop::*;
-use ::piston::input::*;
+use piston_window::{PistonWindow, WindowSettings, OpenGL};
+use piston::event_loop::*;
+use piston::input::*;
 
-use ::scenes::main_menu::MainMenuScene;
-use ::scenes::game::GameScene;
+use scenes::main_menu::MainMenuScene;
+use scenes::game::GameScene;
+use network::{ServerClient, ServerManager};
 
 pub struct Engine {
     pub window: PistonWindow,
@@ -28,8 +29,24 @@ impl Engine {
     pub fn update(&mut self, args: &UpdateArgs) {
         match self.scene.update(args) {
             SceneAction::None => {}
-            SceneAction::ToGameScene(addr) => {
-                self.scene = if let Some(scene) = GameScene::new(&mut self.window, addr) {
+            SceneAction::ConnectToServer(addr) => {
+                self.scene = if let Some(scene) =
+                    GameScene::new(&mut self.window, Box::new(ServerClient::new(addr))) {
+                    Box::new(scene)
+                } else {
+                    Box::new(MainMenuScene::new(&mut self.window))
+                }
+            }
+            SceneAction::StartServer(opt) => {
+                self.scene = if let Some(scene) =
+                    GameScene::new(&mut self.window,
+                                   Box::new(ServerManager::new(opt.0 as f64,
+                                                               opt.1 as f64,
+                                                               (0..opt.2)
+                                                                   .map(|x| {
+                                                                            format!("Player{}", x)
+                                                                        })
+                                                                   .collect()))) {
                     Box::new(scene)
                 } else {
                     Box::new(MainMenuScene::new(&mut self.window))
@@ -55,7 +72,8 @@ impl Engine {
 
 pub enum SceneAction {
     None,
-    ToGameScene(String),
+    ConnectToServer(String),
+    StartServer((isize, isize, isize)),
 }
 
 pub trait Scene {
@@ -70,7 +88,7 @@ pub fn spawn() {
 
     let opengl = OpenGL::V3_2;
 
-    let window: PistonWindow = WindowSettings::new("Complex Crystals Client", [width, height])
+    let window: PistonWindow = WindowSettings::new("Complex Crystals", [width, height])
         .opengl(opengl)
         .exit_on_esc(true)
         .build()

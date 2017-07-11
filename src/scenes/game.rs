@@ -7,11 +7,10 @@ use conrod;
 use conrod::{Ui, Colorable};
 use ui as UI;
 
-use network::Network;
-use network::sampleobject::{ObjectResponse, ObjectType};
+use network::ServerConnection;
+use data_types::{ObjectResponse, ObjectType};
 use utils::camera::{Camera, Direction};
 
-const NETWORK_UPDATE_TIMER: f64 = 1.0;
 const SPRITE_SIZE: f64 = 10.0;
 
 widget_ids! {
@@ -22,8 +21,7 @@ widget_ids! {
     }
 }
 pub struct GameScene {
-    network: Network,
-    network_timer: f64,
+    server: Box<ServerConnection>,
 
     camera: Camera,
     cursor_pos: [f64; 2],
@@ -38,10 +36,7 @@ pub struct GameScene {
 }
 
 impl GameScene {
-    pub fn new(window: &mut PistonWindow, addr: String) -> Option<Self> {
-        println!("Connecting to {}", addr);
-
-        let network = Network::new(addr);
+    pub fn new(window: &mut PistonWindow, connection: Box<ServerConnection>) -> Option<Self> {
         let draw_size = window.draw_size();
 
         let mut ui = UI::build_ui(draw_size.width as f64, draw_size.height as f64);
@@ -50,14 +45,13 @@ impl GameScene {
         let ids = Ids::new(ui.widget_id_generator());
         let image_map = conrod::image::Map::new();
 
-        if let Ok(info) = network.check_connection().join() {
+        if let Some(info) = connection.check_connection() {
             println!("Server name: {}\nServer status: {}\nTPS: {}",
                      info.name,
                      info.status,
                      info.tps);
             Some(GameScene {
-                     network,
-                     network_timer: 0.0,
+                     server: connection,
                      camera: Camera::new((draw_size.width as f64, draw_size.height as f64),
                                          (1000.0, 1000.0)),
                      cursor_pos: [0.0, 0.0],
@@ -82,7 +76,7 @@ impl Scene for GameScene {
             ::piston_window::clear([0.8, 1.0, 0.8, 1.0], graphics);
 
             // draw objects
-            for (_, obj) in self.network.objects.lock().unwrap().iter() {
+            for (_, obj) in self.server.get_objects().iter() {
                 let rectangle = match obj.otype {
                     ObjectType::Asteroid => Rectangle::new([0.2, 0.2, 0.2, 1.0]),
                     ObjectType::Builder => Rectangle::new([0.2, 0.8, 0.2, 1.0]),
@@ -115,12 +109,8 @@ impl Scene for GameScene {
     fn update(&mut self, args: &UpdateArgs) -> SceneAction {
         use conrod::{widget, Widget, Positionable};
 
-        // network update
-        self.network_timer += args.dt;
-        if self.network_timer >= NETWORK_UPDATE_TIMER {
-            self.network.update_objects();
-            self.network_timer = 0.0;
-        }
+        // server update
+        self.server.update(args.dt);
 
         // UI update
         let mut ui = self.ui.set_widgets();
@@ -157,7 +147,7 @@ impl Scene for GameScene {
             Input::Press(Keyboard(Key::Left)) => self.camera.shift(Direction::Left, 1.0),
             Input::Press(Keyboard(Key::Right)) => self.camera.shift(Direction::Right, 1.0),
             Input::Press(Mouse(MouseButton::Left)) => {
-                let objects = self.network.objects.lock().unwrap();
+                let objects = self.server.get_objects();
                 if let Some((_, object)) =
                     objects
                         .iter()

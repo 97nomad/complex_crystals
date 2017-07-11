@@ -1,0 +1,20 @@
+{
+    "owner": "",
+    "name": "Builder",
+    "otype": "Builder",
+    "x": 0.0,
+    "y": 0.0,
+    "drive_speed": 0.001,
+    "drive_dest_x": 0.0,
+    "drive_dest_y": 0.0,
+    "radar_radius": 100.0,
+    "radar_type": "Simple",
+    "weapon_active": false,
+    "weapon_type": "None",
+    "weapon_radius": 0.0,
+    "cargo_type": "Mining",
+    "cargo_max": 10000.0,
+    "cargo_current": 0.0,
+    "shell_health": 2000.0,
+    "shell_type": "Building"
+}

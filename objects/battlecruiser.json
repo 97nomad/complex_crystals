@@ -1,0 +1,20 @@
+{
+    "owner": "",
+    "name": "Battlecruiser",
+    "otype": "Battlecruiser",
+    "x": 0.0,
+    "y": 0.0,
+    "drive_speed": 0.002,
+    "drive_dest_x": 0.0,
+    "drive_dest_y": 0.0,
+    "radar_radius": 100.0,
+    "radar_type": "Military",
+    "weapon_active": false,
+    "weapon_type": "Laser",
+    "weapon_radius": 1.0,
+    "cargo_type": "Battery",
+    "cargo_max": 100.0,
+    "cargo_current": 100.0,
+    "shell_health": 300.0,
+    "shell_type": "Light"
+}
