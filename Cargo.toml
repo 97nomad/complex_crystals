@@ -1,5 +1,5 @@
 [package]
-name = "complex_crystals-client"
+name = "complex_crystals"
 version = "0.1.0"
 authors = ["97nomad <97nomad@gmail.com>"]
 

@@ -88,7 +88,7 @@ pub fn spawn() {
 
     let opengl = OpenGL::V3_2;
 
-    let window: PistonWindow = WindowSettings::new("Complex Crystals Client", [width, height])
+    let window: PistonWindow = WindowSettings::new("Complex Crystals", [width, height])
         .opengl(opengl)
         .exit_on_esc(true)
         .build()
